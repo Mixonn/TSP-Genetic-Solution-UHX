@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Path {
     private List<Integer> path;
     private Graph graph;
-    private long pathLength;
+    private double pathLength;
     private double fitness;
 
     public Path(int size){
@@ -28,10 +28,6 @@ public class Path {
         this.path=path;
         this.graph = graph;
         updatePathLength();
-    }
-
-    public List<Integer> getSubPath(int firstIndex, int lastIndex){
-        return path.subList(firstIndex, lastIndex);
     }
 
     public int getPathAt(int index){
@@ -50,15 +46,8 @@ public class Path {
         return p;
     }
 
-    public void putNewPath(List<Integer> path){
-        if(this.path.size()!=path.size()){
-            throw new IllegalArgumentException("New path must be this same length");
-        }
-        this.path=path;
-    }
-
     private void updatePathLength() {
-        long size = 0;
+        double size = 0;
         for(int i=0; i<=path.size()-1; i++){
             Point first;
             Point second;
@@ -75,7 +64,7 @@ public class Path {
         pathLength = size;
     }
 
-    public long getPathLength() {
+    public double getPathLength() {
         updatePathLength();
         return pathLength;
     }
@@ -127,5 +116,12 @@ public class Path {
             }
         }
         return res;
+    }
+
+    @Override
+    protected Path clone() throws CloneNotSupportedException {
+        List<Integer> newList = new ArrayList<>(path);
+        Path path1 = new Path(newList, graph);
+        return path1;
     }
 }

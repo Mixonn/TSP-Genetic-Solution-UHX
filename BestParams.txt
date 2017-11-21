@@ -1,2 +1,4 @@
 Berlin52.txt
 World world = new World(graph, 200, 23000, 0.93, 0.03);
+World world = new World(graph, 180, 23000, 0.88, 0.04);
+World world = new World(graph, 180, 23000, 0.88, 0.01); -7544 <3

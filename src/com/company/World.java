@@ -2,7 +2,6 @@ package com.company;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -17,8 +16,8 @@ public class World {
     private int generationLimit = Integer.MAX_VALUE;
     private int DRAW_EVERY_X_POINTS=0;
 
-    private Path bestCurrentPath;
-    private Path worstCurrentPath;
+    private Path worstCurrentPath = null;
+    private Path bestKnownPath = null;
     private int currentGenerationNumber;
     private int unchangesGenerations;
     private int mutationsCounter;
@@ -30,7 +29,7 @@ public class World {
     private List<Path> parents;
     private List<Path> selectionPool;
     private List<Path> childs;
-    private long[] values;
+    private double[] values;
 
     public World(Graph graph, int populationSize,
                   int generationLimit, double crossoverProbability,
@@ -40,7 +39,6 @@ public class World {
 
         parents = new ArrayList<>(POPULATION_SIZE);
 
-        bestCurrentPath = null;
         worstCurrentPath = null;
         unchangesGenerations = 0;
         mutationsCounter = 0;
@@ -63,10 +61,7 @@ public class World {
             currentGenerationNumber++;
             if(currentGenerationNumber==1){
                 System.out.print(currentGenerationNumber+ " ");
-                /*for(Path p:parents){
-                    System.out.print(p.getPathLength()+ " ");
-                }*/
-                System.out.println(" ***** BEST: " + bestCurrentPath.getPathLength());
+                System.out.println(" ***** BEST: " + bestKnownPath.getPathLength());
             }
             if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
                 try{
@@ -77,13 +72,10 @@ public class World {
                 }
             }
 
-
+            System.out.println(bestKnownPath.getPathLength());
 
             selection();
             evolve();
-
-            //crossover();
-            //mutation();
 
             updateGeneration();
             updateBestAndWorstValue();
@@ -91,10 +83,7 @@ public class World {
 
             if(currentGenerationNumber==generationLimit){
                 System.out.print(currentGenerationNumber+ " ");
-                /*for(Path p:parents){
-                    System.out.print(p.getPathLength()+ " ");
-                }*/
-                System.out.println(" ***** BEST: " + bestCurrentPath.getPathLength());
+                System.out.println(" ***** BEST: " + bestKnownPath.getPathLength());
                 java.awt.Toolkit.getDefaultToolkit().beep();
             }
         }
@@ -105,13 +94,13 @@ public class World {
     }
     private void drawBestPath(){
         Main.clearLines();
-        for(int i=0; i<bestCurrentPath.getPath().size();i++){
-            int temp=bestCurrentPath.getPathAt(i);
+        for(int i=0; i<bestKnownPath.getPath().size();i++){
+            int temp=bestKnownPath.getPathAt(i);
             int tempNext;
-            if(i==bestCurrentPath.getPath().size()-1){
-                tempNext = bestCurrentPath.getPathAt(0);
+            if(i==bestKnownPath.getPath().size()-1){
+                tempNext = bestKnownPath.getPathAt(0);
             }else{
-                tempNext = bestCurrentPath.getPathAt(i+1);
+                tempNext = bestKnownPath.getPathAt(i+1);
             }
             Point p = graph.getPointAt(temp);
             Point pNext = graph.getPointAt(tempNext);
@@ -119,13 +108,16 @@ public class World {
         }
     }
 
-    public Path getBestPath(){
-        return bestCurrentPath;
-    }
-
-
     private void updateGeneration(){
-        parents = childs;
+        parents = new ArrayList<>();
+        for(Path p:childs){
+            try {
+                parents.add(p.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        childs = null;
     }
 
     private void evolve(){
@@ -152,8 +144,8 @@ public class World {
     //Done
     private void selection() {
         selectionPool = new ArrayList<>(POPULATION_SIZE);
-        childs = new ArrayList<>(POPULATION_SIZE);
-        childs.add(bestCurrentPath);
+        childs = new ArrayList<>();
+        childs.add(bestKnownPath);
 
         RouletteWheel roulette = new RouletteWheel((ArrayList<Path>)parents);
         int currSpines = 1; //We added the best value to childs
@@ -174,49 +166,21 @@ public class World {
 
     //Done
     private void updateBestAndWorstValue(){
-        values = new long[POPULATION_SIZE];
-        for(int i = 0; i< POPULATION_SIZE; i++){
-            values[i] = parents.get(i).getPathLength();
-        }
-        int bestPos = getBestCurrentValueIndex();
-        int worstPos = getWorstCurrentValueIndex();
-        Path newBestPath = parents.get(bestPos);
-        Path newWorstPath = parents.get(worstPos);
-
-        if(bestCurrentPath == null || newBestPath.getPathLength() < bestCurrentPath.getPathLength()){
-            unchangesGenerations = 0;
-        }else{
-            unchangesGenerations++;
-        }
-
-        bestCurrentPath = newBestPath;
-        worstCurrentPath = newWorstPath;
-    }
-
-    //Done
-    private int getBestCurrentValueIndex() {
-        int bestPos = -1;
-        long bestVal = Long.MAX_VALUE;
-        for(int i = 0; i< POPULATION_SIZE; i++){
-            if(values[i]<bestVal){
-                bestVal = values[i];
-                bestPos = i;
+        Path longestPath = null;
+        Path shortestPath = null;
+        for(int i = 0; i< parents.size(); i++){
+            Path curr = parents.get(i);
+            if(longestPath==null || (longestPath.getPathLength()<curr.getPathLength())){
+                longestPath = curr;
+            }
+            if(shortestPath==null || (shortestPath.getPathLength()>curr.getPathLength())){
+                shortestPath = curr;
             }
         }
-        return bestPos;
-    }
-
-    //Done
-    private int getWorstCurrentValueIndex() {
-        int worstPos = -1;
-        long worstVal = Long.MIN_VALUE;
-        for(int i = 0; i< POPULATION_SIZE; i++){
-            if(values[i]>worstVal){
-                worstVal = values[i];
-                worstPos = i;
-            }
+        if(bestKnownPath==null || shortestPath.getPathLength() < bestKnownPath.getPathLength()){
+            bestKnownPath = shortestPath;
         }
-        return worstPos;
+        worstCurrentPath = longestPath;
     }
 
     private void crossover(Path path1, Path path2) {

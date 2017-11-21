@@ -42,10 +42,10 @@ public class Main{
 
             Graph graph = new Graph(listOfPoints);
             for(Point p:graph.getPoints()){
-                myFrame.addCircle(p.getX(), p.getY(), 4);
+                myFrame.addCircle(p.getX(), p.getY(), 5);
             }
-            World world = new World(graph, 200, 23000, 0.93, 0.03);
-            world.drawEveryXPoints(200);
+            World world = new World(graph, 180, 23000, 0.88, 0.01);
+            world.drawEveryXPoints(300);
             world.run();
 
             /*Path best = world.getBestPath();
