@@ -1,0 +1,2 @@
+Berlin52.txt
+World world = new World(graph, 200, 23000, 0.93, 0.03);
