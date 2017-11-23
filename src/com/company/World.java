@@ -1,5 +1,10 @@
 package com.company;
 
+import com.company.crossover.CX;
+import com.company.crossover.CrossoverPMX;
+import com.company.crossover.OX;
+import com.company.crossover.PathCrossover;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,35 +18,34 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class World {
     private Graph graph;
-    private int generationLimit = Integer.MAX_VALUE;
-    private int DRAW_EVERY_X_POINTS=0;
+    private long generationLimit = Long.MAX_VALUE;
+    private long DRAW_EVERY_X_POINTS=0;
+    private long PRINT_EVERY_X_POINTS=0;
 
     private Path worstCurrentPath = null;
     private Path bestKnownPath = null;
-    private int currentGenerationNumber;
-    private int unchangesGenerations;
-    private int mutationsCounter;
+    private long currentGenerationNumber;
 
     private final int POPULATION_SIZE;
+    private final String CROSSOVER_METHOD;
+
     private final double CROSSOVER_PROBABILITY;
     private final double MUTATION_PROBABILITY;
 
     private List<Path> parents;
     private List<Path> selectionPool;
     private List<Path> childs;
-    private double[] values;
 
     public World(Graph graph, int populationSize,
-                  int generationLimit, double crossoverProbability,
+                  long generationLimit, String crossoverMethod, double crossoverProbability,
                   double mutationProbability){
         this.graph=graph;
         this.POPULATION_SIZE = populationSize;
+        this.CROSSOVER_METHOD = crossoverMethod;
 
         parents = new ArrayList<>(POPULATION_SIZE);
 
         worstCurrentPath = null;
-        unchangesGenerations = 0;
-        mutationsCounter = 0;
         currentGenerationNumber = 0;
         this.generationLimit = generationLimit;
 
@@ -59,20 +63,7 @@ public class World {
     public void run(){
         while(currentGenerationNumber<generationLimit){
             currentGenerationNumber++;
-            if(currentGenerationNumber==1){
-                System.out.print(currentGenerationNumber+ " ");
-                System.out.println(" ***** BEST: " + bestKnownPath.getPathLength());
-            }
-            if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
-                try{
-                    drawBestPath();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return;
-                }
-            }
-
-            System.out.println(bestKnownPath.getPathLength());
+            printBestResult();
 
             selection();
             evolve();
@@ -81,16 +72,16 @@ public class World {
             updateBestAndWorstValue();
             updateAllFitnesses();
 
-            if(currentGenerationNumber==generationLimit){
-                System.out.print(currentGenerationNumber+ " ");
-                System.out.println(" ***** BEST: " + bestKnownPath.getPathLength());
-                java.awt.Toolkit.getDefaultToolkit().beep();
-            }
         }
+        printBestResult();
+        java.awt.Toolkit.getDefaultToolkit().beep();
     }
 
-    public void drawEveryXPoints(int i){
+    public void drawEveryXGenerations(long i){
         DRAW_EVERY_X_POINTS = i;
+    }
+    public void printResultEveryXGenerations(long i){
+        PRINT_EVERY_X_POINTS = i;
     }
     private void drawBestPath(){
         Main.clearLines();
@@ -105,6 +96,20 @@ public class World {
             Point p = graph.getPointAt(temp);
             Point pNext = graph.getPointAt(tempNext);
             Main.addLine(p.getX(), p.getY(), pNext.getX(), pNext.getY(), Color.BLACK);
+        }
+    }
+
+    private void printBestResult(){
+        if(PRINT_EVERY_X_POINTS==0||currentGenerationNumber%PRINT_EVERY_X_POINTS==1||currentGenerationNumber==generationLimit){
+            System.out.print(currentGenerationNumber+ "\t");
+            System.out.println(" BEST: " + bestKnownPath.getPathLength());
+        }
+        if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
+            try{
+                drawBestPath();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -177,7 +182,7 @@ public class World {
                 shortestPath = curr;
             }
         }
-        if(bestKnownPath==null || shortestPath.getPathLength() < bestKnownPath.getPathLength()){
+        if(bestKnownPath==null || shortestPath.getPathLength() < bestKnownPath.getPathLength()){ //GOD, i know it can generate null, but it doesnt
             bestKnownPath = shortestPath;
         }
         worstCurrentPath = longestPath;
@@ -186,13 +191,20 @@ public class World {
     private void crossover(Path path1, Path path2) {
         int[] path1Arr = path1.getPathAsArray();
         int[] path2Arr = path2.getPathAsArray();
-        CrossoverPMX cross = new CrossoverPMX(path1Arr, path2Arr);
+        PathCrossover method;
+        if(CROSSOVER_METHOD.toLowerCase().equals("ox")){
+            method = new OX(path1Arr, path2Arr);
+        }else if(CROSSOVER_METHOD.toLowerCase().equals("cx")){
+            method = new CX(path1Arr, path2Arr);
+        }else {
+            method = new CrossoverPMX(path1Arr, path2Arr);
+        }
 
         List<Integer> ar1 = new ArrayList<>();
         List<Integer> ar2= new ArrayList<>();
         for(int i=0; i<path1Arr.length; i++){
-            ar1.add(cross.get_offspring1()[i]);
-            ar2.add(cross.get_offspring2()[i]);
+            ar1.add(method.getOffspring1()[i]);
+            ar2.add(method.getOffspring2()[i]);
         }
 
         childs.add(new Path(ar1, graph));

@@ -4,9 +4,7 @@ package com.company;
 
 import com.company.graphic.MyFrame;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -44,8 +42,9 @@ public class Main{
             for(Point p:graph.getPoints()){
                 myFrame.addCircle(p.getX(), p.getY(), 5);
             }
-            World world = new World(graph, 180, 23000, 0.88, 0.01);
-            world.drawEveryXPoints(300);
+            World world = new World(graph, 180, 15000, "cx", 0.90, 0.01);
+            world.drawEveryXGenerations(0);
+            world.printResultEveryXGenerations(100);
             world.run();
 
             /*Path best = world.getBestPath();

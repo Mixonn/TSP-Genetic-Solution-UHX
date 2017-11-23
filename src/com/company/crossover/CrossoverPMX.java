@@ -1,14 +1,12 @@
-package com.company;
+package com.company.crossover;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Created by Bartosz Osipiuk on 2017-11-19.
- *
- * @author Bartosz Osipiuk
+ * https://github.com/PLT875/Solving-the-TSP-using-Genetic-Algorithms
  */
 
-public class CrossoverPMX {
+public class CrossoverPMX implements PathCrossover {
     private int[] parent1;
     private int[] parent2;
     private int[] offspring1;
@@ -40,26 +38,20 @@ public class CrossoverPMX {
             cutPoint1 = cutPoint2;
             cutPoint2 = temp;
         }
-        create_Segments(cutPoint1, cutPoint2);
+        createSegments(cutPoint1, cutPoint2);
         crossOver(offspring1, parent1, parent2);
         crossOver(offspring2, parent2, parent1);
 
     }
 
-    public int get_cutPoint1()   { return cutPoint1;  } // For Testing Purposes //
-    public int get_cutPoint2()   { return cutPoint2;  } // For Testing Purposes //
+    @Override
+    public int[] getOffspring1(){ return offspring1; }
 
-    public int[] get_segment1()  { return segment1;   } // For Testing Purposes //
-    public int[] get_segment2()  { return segment2;   } // For Testing Purposes //
-
-    public int[] get_parent1()   { return parent1;    }
-    public int[] get_parent2()   { return parent2;    }
-
-    public int[] get_offspring1(){ return offspring1; }
-    public int[] get_offspring2(){ return offspring2; }
+    @Override
+    public int[] getOffspring2(){ return offspring2; }
 
     // For an Element given by its index check that it doesn't appear twice //
-    private boolean check_forDuplicates(int [] offspring, int indexOfElement){
+    private boolean checkDuplicates(int [] offspring, int indexOfElement){
         for(int index = 0; index < offspring.length; index++){
             if((offspring[index] == offspring[indexOfElement]) &&
                     (indexOfElement != index) ){
@@ -70,7 +62,7 @@ public class CrossoverPMX {
     }
 
     // If Element is Duplicated, replace it by using its mapping //
-    private void sort_Duplicates(int [] offspring, int indexOfElement){
+    private void sortDuplicates(int [] offspring, int indexOfElement){
         for(int index = 0; index < segment1.length; index++){
             if(segment1[index] == offspring[indexOfElement]){
                 offspring[indexOfElement] = segment2[index];
@@ -81,7 +73,7 @@ public class CrossoverPMX {
         }
     }
 
-    private void create_Segments(int cutPoint1, int cutPoint2){
+    private void createSegments(int cutPoint1, int cutPoint2){
         int capacity_ofSegments = (cutPoint2 - cutPoint1) + 1;
         segment1 = new int[capacity_ofSegments];
         segment2 = new int[capacity_ofSegments];
@@ -96,7 +88,7 @@ public class CrossoverPMX {
         }
     }
 
-    private void insert_Segments(int[] offspring, int[] segment){
+    private void insertSegments(int[] offspring, int[] segment){
         int segmentIndex = 0;
         for(int index = 0; index < offspring.length; index++){
             if((index >= cutPoint1) && (index <= cutPoint2)){
@@ -106,16 +98,16 @@ public class CrossoverPMX {
         }
     }
 
-    // offspring2 gets segment 1, offspring1 gets segment2 //
+    @Override
     public void crossOver(int [] offspring, int[] parentX, int[] parentY){
         if(offspring == offspring1){
             int[] segment = segment2;
-            insert_Segments(offspring, segment);
+            insertSegments(offspring, segment);
         }
 
         else if(offspring == offspring2){
             int [] segment = segment1;
-            insert_Segments(offspring, segment);
+            insertSegments(offspring, segment);
         }
 
         for(int index = 0; index < offspring.length; index++){
@@ -126,8 +118,8 @@ public class CrossoverPMX {
 
         for(int index = 0; index < offspring.length; index++){
             if((index < cutPoint1) || (index > cutPoint2)){
-                while(check_forDuplicates(offspring, index)){
-                    sort_Duplicates(offspring, index);
+                while(checkDuplicates(offspring, index)){
+                    sortDuplicates(offspring, index);
                 }
             }
         }
