@@ -25,10 +25,10 @@ public class World {
     private Path worstCurrentPath = null;
     private Path bestKnownPath = null;
     private long currentGenerationNumber;
+    private double averagePathSize;
 
     private final int POPULATION_SIZE;
     private final String CROSSOVER_METHOD;
-
     private final double CROSSOVER_PROBABILITY;
     private final double MUTATION_PROBABILITY;
 
@@ -56,7 +56,7 @@ public class World {
             parents.add(i, this.graph.generateRandomPath());
         }
 
-        updateBestAndWorstValue();
+        updateImportantPathsAndValues();
         updateAllFitnesses();
     }
 
@@ -69,7 +69,7 @@ public class World {
             evolve();
 
             updateGeneration();
-            updateBestAndWorstValue();
+            updateImportantPathsAndValues();
             updateAllFitnesses();
 
         }
@@ -98,11 +98,11 @@ public class World {
             Main.addLine(p.getX(), p.getY(), pNext.getX(), pNext.getY(), Color.BLACK);
         }
     }
-
     private void printBestResult(){
         if(PRINT_EVERY_X_POINTS==0||currentGenerationNumber%PRINT_EVERY_X_POINTS==1||currentGenerationNumber==generationLimit){
-            System.out.print(currentGenerationNumber+ "\t");
-            System.out.println(" BEST: " + bestKnownPath.getPathLength());
+            System.out.print(currentGenerationNumber);
+            System.out.print("\t\t B:" + bestKnownPath.getPathLength());
+            System.out.println("\t Av: " + averagePathSize);
         }
         if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
             try{
@@ -170,11 +170,13 @@ public class World {
     }
 
     //Done
-    private void updateBestAndWorstValue(){
+    private void updateImportantPathsAndValues(){
         Path longestPath = null;
         Path shortestPath = null;
+        double sum=0;
         for(int i = 0; i< parents.size(); i++){
             Path curr = parents.get(i);
+            sum+=parents.get(i).getPathLength();
             if(longestPath==null || (longestPath.getPathLength()<curr.getPathLength())){
                 longestPath = curr;
             }
@@ -186,6 +188,7 @@ public class World {
             bestKnownPath = shortestPath;
         }
         worstCurrentPath = longestPath;
+        averagePathSize = sum/parents.size();
     }
 
     private void crossover(Path path1, Path path2) {

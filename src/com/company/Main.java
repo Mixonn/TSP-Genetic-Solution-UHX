@@ -18,8 +18,9 @@ public class Main{
     public static final int GRAPH_SIZE_MULTIPLIER = 1;
     public static void main(String[] args) {
         List<Point> listOfPoints = new ArrayList<>();
+        int maxFrameSize = 1000;
         int numberOfPoints;
-        try(Scanner scanner = new Scanner(new File("resources/berlin52.txt"))){
+        try(Scanner scanner = new Scanner(new File("resources/eil51.txt"))){
             numberOfPoints = scanner.nextInt();
             int x=Integer.MIN_VALUE;
             int y = Integer.MIN_VALUE;
@@ -36,14 +37,14 @@ public class Main{
                 listOfPoints.add(new Point(sID, sX, sY));
             }
 
-            myFrame = new MyFrame(x, y);
+            myFrame = new MyFrame(x, y, maxFrameSize);
 
             Graph graph = new Graph(listOfPoints);
             for(Point p:graph.getPoints()){
                 myFrame.addCircle(p.getX(), p.getY(), 5);
             }
-            World world = new World(graph, 180, 15000, "cx", 0.90, 0.01);
-            world.drawEveryXGenerations(0);
+            World world = new World(graph, 180, 15000, "pmx", 0.90, 0.01);
+            world.drawEveryXGenerations(500);
             world.printResultEveryXGenerations(100);
             world.run();
 
