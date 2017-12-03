@@ -19,8 +19,17 @@ public class Main{
     public static void main(String[] args) {
         List<Point> listOfPoints = new ArrayList<>();
         int maxFrameSize = 1000;
+        final int POPULATION_SIZE = 200;
+        final long GENERATION_LIMIT = 0;
+        final double CROSS_PROBAB = 0.90;
+        final double MUTATION_PROBAB = 0.01;
+        final String CROSS_METHOD = "pmx" ;
+        final String DATASET = "resources/rat99.tsp";
+        final int DRAW_EVERY= 10;
+        final int PRINT_EVERY= 50;
+
         int numberOfPoints;
-        try(Scanner scanner = new Scanner(new File("resources/eil51.txt"))){
+        try(Scanner scanner = new Scanner(new File(DATASET))){
             numberOfPoints = scanner.nextInt();
             int x=Integer.MIN_VALUE;
             int y = Integer.MIN_VALUE;
@@ -43,9 +52,9 @@ public class Main{
             for(Point p:graph.getPoints()){
                 myFrame.addCircle(p.getX(), p.getY(), 5);
             }
-            World world = new World(graph, 180, 15000, "pmx", 0.90, 0.01);
-            world.drawEveryXGenerations(500);
-            world.printResultEveryXGenerations(100);
+            World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT, CROSS_METHOD, CROSS_PROBAB, MUTATION_PROBAB);
+            world.drawEveryXGenerations(DRAW_EVERY);
+            world.printResultEveryXGenerations(PRINT_EVERY);
             world.run();
 
             /*Path best = world.getBestPath();

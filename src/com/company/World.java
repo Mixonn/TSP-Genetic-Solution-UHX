@@ -26,11 +26,12 @@ public class World {
     private Path bestKnownPath = null;
     private long currentGenerationNumber;
     private double averagePathSize;
+    private long unchangedGenerations;
 
     private final int POPULATION_SIZE;
     private final String CROSSOVER_METHOD;
-    private final double CROSSOVER_PROBABILITY;
-    private final double MUTATION_PROBABILITY;
+    private double CROSSOVER_PROBABILITY;
+    private double MUTATION_PROBABILITY;
 
     private List<Path> parents;
     private List<Path> selectionPool;
@@ -47,7 +48,11 @@ public class World {
 
         worstCurrentPath = null;
         currentGenerationNumber = 0;
-        this.generationLimit = generationLimit;
+        if(generationLimit==0){
+            this.generationLimit = Long.MAX_VALUE;
+        }else {
+            this.generationLimit = generationLimit;
+        }
 
         CROSSOVER_PROBABILITY = crossoverProbability;
         MUTATION_PROBABILITY = mutationProbability;
@@ -61,9 +66,20 @@ public class World {
     }
 
     public void run(){
+        unchangedGenerations = 0;
+        double oldMutProb = MUTATION_PROBABILITY;
+        double oldCrossProb = CROSSOVER_PROBABILITY;
         while(currentGenerationNumber<generationLimit){
             currentGenerationNumber++;
             printBestResult();
+
+            if((int)(unchangedGenerations/10000) == 0){
+                MUTATION_PROBABILITY = oldMutProb;
+                CROSSOVER_PROBABILITY = oldCrossProb;
+            }else{
+                MUTATION_PROBABILITY = oldMutProb+ ((int)(unchangedGenerations/10000))/100.0;
+                CROSSOVER_PROBABILITY = oldCrossProb - ((int)(unchangedGenerations/20000))/100.0;
+            }
 
             selection();
             evolve();
@@ -102,7 +118,9 @@ public class World {
         if(PRINT_EVERY_X_POINTS==0||currentGenerationNumber%PRINT_EVERY_X_POINTS==1||currentGenerationNumber==generationLimit){
             System.out.print(currentGenerationNumber);
             System.out.print("\t\t B:" + bestKnownPath.getPathLength());
-            System.out.println("\t Av: " + averagePathSize);
+            System.out.print("\t Av: " + averagePathSize);
+            System.out.print("\t Un: " + unchangedGenerations);
+            System.out.println("\t Mut: " + MUTATION_PROBABILITY);
         }
         if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
             try{
@@ -115,13 +133,7 @@ public class World {
 
     private void updateGeneration(){
         parents = new ArrayList<>();
-        for(Path p:childs){
-            try {
-                parents.add(p.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        }
+        parents.addAll(childs);
         childs = null;
     }
 
@@ -150,7 +162,11 @@ public class World {
     private void selection() {
         selectionPool = new ArrayList<>(POPULATION_SIZE);
         childs = new ArrayList<>();
-        childs.add(bestKnownPath);
+        try {
+            childs.add(bestKnownPath.clone());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
         RouletteWheel roulette = new RouletteWheel((ArrayList<Path>)parents);
         int currSpines = 1; //We added the best value to childs
@@ -171,6 +187,7 @@ public class World {
 
     //Done
     private void updateImportantPathsAndValues(){
+        //TODO Moze przy dodawaniu bestpath dodać kopię a zatrzymac prawdziwe?
         Path longestPath = null;
         Path shortestPath = null;
         double sum=0;
@@ -185,7 +202,14 @@ public class World {
             }
         }
         if(bestKnownPath==null || shortestPath.getPathLength() < bestKnownPath.getPathLength()){ //GOD, i know it can generate null, but it doesnt
-            bestKnownPath = shortestPath;
+            try {
+                bestKnownPath = shortestPath.clone();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+            unchangedGenerations=0;
+        }else{
+            unchangedGenerations++;
         }
         worstCurrentPath = longestPath;
         averagePathSize = sum/parents.size();

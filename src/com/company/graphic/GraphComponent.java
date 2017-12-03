@@ -48,13 +48,17 @@ public class GraphComponent extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        for (int i=0; i<lines.size();i++) {
-            g.setColor(lines.get(i).color);
-            g.drawLine(lines.get(i).x1, lines.get(i).y1, lines.get(i).x2, lines.get(i).y2);
-        }
-        for(int i=0; i<circles.size(); i++){
-            g.drawOval(circles.get(i).x, circles.get(i).y, circles.get(i).r, circles.get(i).r);
+        try {
+            super.paintComponent(g);
+            for (int i = 0; i < lines.size(); i++) {
+                g.setColor(lines.get(i).color);
+                g.drawLine(lines.get(i).x1, lines.get(i).y1, lines.get(i).x2, lines.get(i).y2);
+            }
+            for (int i = 0; i < circles.size(); i++) {
+                g.drawOval(circles.get(i).x, circles.get(i).y, circles.get(i).r, circles.get(i).r);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
     }
