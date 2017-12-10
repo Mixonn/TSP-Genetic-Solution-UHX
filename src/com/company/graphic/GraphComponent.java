@@ -58,7 +58,8 @@ public class GraphComponent extends JComponent {
                 g.drawOval(circles.get(i).x, circles.get(i).y, circles.get(i).r, circles.get(i).r);
             }
         }catch(Exception e){
-            e.printStackTrace();
+            e.getMessage();
+            System.err.println("Some drawing problems (SWING)");
         }
 
     }
