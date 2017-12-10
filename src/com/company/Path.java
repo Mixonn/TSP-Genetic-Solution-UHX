@@ -30,7 +30,7 @@ public class Path {
         updatePathLength();
     }
 
-    public int getPathAt(int index){
+    public int getIdAt(int index){
         return path.get(index);
     }
 
@@ -67,6 +67,10 @@ public class Path {
     public double getPathLength() {
         updatePathLength();
         return pathLength;
+    }
+
+    public int getPathSize(){
+        return path.size();
     }
 
     public void mutateByCircuitInversion(){

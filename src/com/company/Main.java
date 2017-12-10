@@ -19,14 +19,13 @@ public class Main{
     public static void main(String[] args) {
         List<Point> listOfPoints = new ArrayList<>();
         int maxFrameSize = 1000;
-        final int POPULATION_SIZE = 200;
+        final int POPULATION_SIZE = 20;
         final long GENERATION_LIMIT = 0;
         final double CROSS_PROBAB = 0.90;
         final double MUTATION_PROBAB = 0.01;
-        final String CROSS_METHOD = "pmx" ;
-        final String DATASET = "resources/rat99.tsp";
-        final int DRAW_EVERY= 10;
-        final int PRINT_EVERY= 50;
+        final String DATASET = "resources/a280.tsp";
+        final int DRAW_EVERY= 1000;
+        final int PRINT_EVERY= 500;
 
         int numberOfPoints;
         try(Scanner scanner = new Scanner(new File(DATASET))){
@@ -52,19 +51,34 @@ public class Main{
             for(Point p:graph.getPoints()){
                 myFrame.addCircle(p.getX(), p.getY(), 5);
             }
-            World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT, CROSS_METHOD, CROSS_PROBAB, MUTATION_PROBAB);
+            World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT, CROSS_PROBAB, MUTATION_PROBAB);
             world.drawEveryXGenerations(DRAW_EVERY);
             world.printResultEveryXGenerations(PRINT_EVERY);
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                public void run() {
+                    System.out.println("The best finded path");
+                    try {
+                        int[] best = world.getBestKnownPath().getPathAsArray();
+                        for (int aBest : best) {
+                            System.out.print(aBest + " ");
+                        }
+                        System.out.println();
+                    }catch (IllegalStateException e){
+                        e.getMessage();
+                        e.printStackTrace();
+                    }
+                }
+            }, "Shutdown-thread"));
             world.run();
 
             /*Path best = world.getBestPath();
             for(int i=0; i<best.getPath().size();i++){
-                int temp=best.getPathAt(i);
+                int temp=best.getIdAt(i);
                 int tempNext;
                 if(i==best.getPath().size()-1){
-                    tempNext = best.getPathAt(0);
+                    tempNext = best.getIdAt(0);
                 }else{
-                    tempNext = best.getPathAt(i+1);
+                    tempNext = best.getIdAt(i+1);
                 }
                 Point p = graph.getPointAt(temp);
                 Point pNext = graph.getPointAt(tempNext);
@@ -74,6 +88,8 @@ public class Main{
             System.err.println("File not found!");
             e.printStackTrace();
         }
+
+
 
     }
 

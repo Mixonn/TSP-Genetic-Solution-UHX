@@ -1,9 +1,6 @@
 package com.company;
 
-import com.company.crossover.CX;
-import com.company.crossover.CrossoverPMX;
-import com.company.crossover.OX;
-import com.company.crossover.PathCrossover;
+import com.company.crossover.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,7 +26,6 @@ public class World {
     private long unchangedGenerations;
 
     private final int POPULATION_SIZE;
-    private final String CROSSOVER_METHOD;
     private double CROSSOVER_PROBABILITY;
     private double MUTATION_PROBABILITY;
 
@@ -38,12 +34,10 @@ public class World {
     private List<Path> childs;
 
     public World(Graph graph, int populationSize,
-                  long generationLimit, String crossoverMethod, double crossoverProbability,
+                  long generationLimit, double crossoverProbability,
                   double mutationProbability){
         this.graph=graph;
         this.POPULATION_SIZE = populationSize;
-        this.CROSSOVER_METHOD = crossoverMethod;
-
         parents = new ArrayList<>(POPULATION_SIZE);
 
         worstCurrentPath = null;
@@ -77,8 +71,8 @@ public class World {
                 MUTATION_PROBABILITY = oldMutProb;
                 CROSSOVER_PROBABILITY = oldCrossProb;
             }else{
-                MUTATION_PROBABILITY = oldMutProb+ ((int)(unchangedGenerations/10000))/100.0;
-                CROSSOVER_PROBABILITY = oldCrossProb - ((int)(unchangedGenerations/20000))/100.0;
+                MUTATION_PROBABILITY = oldMutProb+ ((int)(unchangedGenerations/10000))/1000.0;
+                CROSSOVER_PROBABILITY = oldCrossProb - ((int)(unchangedGenerations/20000))/1000.0;
             }
 
             selection();
@@ -99,15 +93,23 @@ public class World {
     public void printResultEveryXGenerations(long i){
         PRINT_EVERY_X_POINTS = i;
     }
+
+    public Path getBestKnownPath() throws  IllegalStateException{
+        if(bestKnownPath==null){
+            throw new IllegalStateException("Generic algorithm didn`t generate best path yet");
+        }
+        return bestKnownPath;
+    }
+
     private void drawBestPath(){
         Main.clearLines();
         for(int i=0; i<bestKnownPath.getPath().size();i++){
-            int temp=bestKnownPath.getPathAt(i);
+            int temp=bestKnownPath.getIdAt(i);
             int tempNext;
             if(i==bestKnownPath.getPath().size()-1){
-                tempNext = bestKnownPath.getPathAt(0);
+                tempNext = bestKnownPath.getIdAt(0);
             }else{
-                tempNext = bestKnownPath.getPathAt(i+1);
+                tempNext = bestKnownPath.getIdAt(i+1);
             }
             Point p = graph.getPointAt(temp);
             Point pNext = graph.getPointAt(tempNext);
@@ -138,22 +140,41 @@ public class World {
     }
 
     private void evolve(){
-        for(int i=0; i<selectionPool.size(); i+=2){
+        int toMutate = (int)(MUTATION_PROBABILITY * selectionPool.size());
+        double restMutation = (MUTATION_PROBABILITY * selectionPool.size())-toMutate;
+        if(restMutation>=ThreadLocalRandom.current().nextDouble(1)){
+            toMutate++;
+        }
+        while(toMutate>0){
+            int mutIndex = ThreadLocalRandom.current().nextInt(selectionPool.size());
+            mutate(selectionPool.get(mutIndex));
+            selectionPool.remove(mutIndex);
+            --toMutate;
+        }
+
+        double copyProbab = 1-CROSSOVER_PROBABILITY-MUTATION_PROBABILITY;
+        if(copyProbab>0){
+            int toCopy = (int)(copyProbab * selectionPool.size());
+            double restCopy = (copyProbab * selectionPool.size()*1.0)-toCopy;
+            if(restCopy>=ThreadLocalRandom.current().nextDouble(1)){
+                toCopy++;
+            }
+            while(toCopy>0){
+                int copIndex = ThreadLocalRandom.current().nextInt(selectionPool.size());
+                copy(selectionPool.get(copIndex));
+                selectionPool.remove(copIndex);
+                --toCopy;
+            }
+        }
+
+
+        for(int i=0; i<selectionPool.size(); i++){
             if(i==selectionPool.size()-1){
-                childs.add(selectionPool.get(i));
+                crossover(selectionPool.get(i), selectionPool.get(0));
                 continue;
             }
-            double evolveChoise = ThreadLocalRandom.current().nextDouble();
 
-            //Crossover
-            if((evolveChoise>=0.0)&&(evolveChoise<=CROSSOVER_PROBABILITY)){
-                crossover(selectionPool.get(i), selectionPool.get(i+1));
-            }else if((evolveChoise>CROSSOVER_PROBABILITY)&&(evolveChoise<=CROSSOVER_PROBABILITY+MUTATION_PROBABILITY)){
-                mutate(selectionPool.get(i), selectionPool.get(i+1));
-            }else{
-                copy(selectionPool.get(i), selectionPool.get(i+1));
-            }
-
+            crossover(selectionPool.get(i), selectionPool.get(i+1));
 
         }
     }
@@ -164,12 +185,15 @@ public class World {
         childs = new ArrayList<>();
         try {
             childs.add(bestKnownPath.clone());
+            Path mutatedBest = bestKnownPath.clone();
+            mutatedBest.mutateByCircuitInversion();
+            childs.add(mutatedBest);
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
 
         RouletteWheel roulette = new RouletteWheel((ArrayList<Path>)parents);
-        int currSpines = 1; //We added the best value to childs
+        int currSpines = childs.size(); //We added the best value to childs
         while(currSpines<parents.size()){
             selectionPool.add(parents.get(roulette.pickPathIndex()));
             currSpines++;
@@ -187,7 +211,6 @@ public class World {
 
     //Done
     private void updateImportantPathsAndValues(){
-        //TODO Moze przy dodawaniu bestpath dodać kopię a zatrzymac prawdziwe?
         Path longestPath = null;
         Path shortestPath = null;
         double sum=0;
@@ -216,38 +239,39 @@ public class World {
     }
 
     private void crossover(Path path1, Path path2) {
-        int[] path1Arr = path1.getPathAsArray();
-        int[] path2Arr = path2.getPathAsArray();
-        PathCrossover method;
-        if(CROSSOVER_METHOD.toLowerCase().equals("ox")){
-            method = new OX(path1Arr, path2Arr);
-        }else if(CROSSOVER_METHOD.toLowerCase().equals("cx")){
-            method = new CX(path1Arr, path2Arr);
-        }else {
-            method = new CrossoverPMX(path1Arr, path2Arr);
-        }
+        List<Integer> path1Arr = path1.getPath();
+        List<Integer> path2Arr = path2.getPath();
 
-        List<Integer> ar1 = new ArrayList<>();
-        List<Integer> ar2= new ArrayList<>();
-        for(int i=0; i<path1Arr.length; i++){
-            ar1.add(method.getOffspring1()[i]);
-            ar2.add(method.getOffspring2()[i]);
-        }
+        UHX cross = new UHX(path1Arr, path2Arr, graph);
 
-        childs.add(new Path(ar1, graph));
-        childs.add(new Path(ar2, graph));
+        List<Integer> childList = new ArrayList<>();
+        childList.addAll(cross.getChild());
+        childs.add(new Path(childList, graph));
     }
 
-    private void mutate(Path path1, Path path2){
+    private void mutate(Path path1){
         path1.mutateByCircuitInversion();
-        path2.mutateByCircuitInversion();
         childs.add(path1);
-        childs.add(path2);
+        /*Path p1Copy = path1.clone();
+            Path p2Copy = path2.clone();
+
+            p1Copy.mutateByCircuitInversion();
+            p2Copy.mutateByCircuitInversion();
+
+            if(p1Copy.getPathLength()<path1.getPathLength()){
+                childs.add(p1Copy);
+            }else{
+                childs.add(path1);
+            }
+            if(p2Copy.getPathLength()<path2.getPathLength()){
+                childs.add(p2Copy);
+            }else{
+                childs.add(path2);
+            }*/
     }
 
-    private void copy(Path path1, Path path2){
+    private void copy(Path path1){
         childs.add(path1);
-        childs.add(path2);
     }
 
 

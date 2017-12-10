@@ -9,7 +9,7 @@ package com.company;
 public class Point {
     private final int x, y, id;
 
-    Point(int id, int x, int y){
+    public Point(int id, int x, int y){
         this.id = id;
         this.x = x;
         this.y = y;
