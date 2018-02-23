@@ -3,6 +3,7 @@ package com.company;
 import com.company.crossover.*;
 
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -66,7 +67,6 @@ public class World {
         while(currentGenerationNumber<generationLimit){
             currentGenerationNumber++;
             printBestResult();
-
             if((int)(unchangedGenerations/10000) == 0){
                 MUTATION_PROBABILITY = oldMutProb;
                 CROSSOVER_PROBABILITY = oldCrossProb;
@@ -81,7 +81,6 @@ public class World {
             updateGeneration();
             updateImportantPathsAndValues();
             updateAllFitnesses();
-
         }
         printBestResult();
         java.awt.Toolkit.getDefaultToolkit().beep();
@@ -100,6 +99,7 @@ public class World {
         }
         return bestKnownPath;
     }
+
 
     private void drawBestPath(){
         Main.clearLines();
@@ -132,11 +132,24 @@ public class World {
             }
         }
     }
-
     private void updateGeneration(){
         parents = new ArrayList<>();
         parents.addAll(childs);
         childs = null;
+    }
+    private void saveBestResult(int generation){
+        try(FileWriter fw = new FileWriter("pathsResults.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)){
+            out.print(generation + " ");
+            out.print(bestKnownPath.getPathLength()+" ");
+            out.print( bestKnownPath );
+            out.println("]");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void evolve(){

@@ -5,8 +5,7 @@ package com.company;
 import com.company.graphic.MyFrame;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,14 +17,14 @@ public class Main{
     public static final int GRAPH_SIZE_MULTIPLIER = 1;
     public static void main(String[] args) {
         List<Point> listOfPoints = new ArrayList<>();
-        int maxFrameSize = 1000;
-        final int POPULATION_SIZE = 20;
+        int maxFrameSize = 800;
+        final int POPULATION_SIZE = 22;
         final long GENERATION_LIMIT = 0;
-        final double CROSS_PROBAB = 0.90;
-        final double MUTATION_PROBAB = 0.01;
-        final String DATASET = "resources/a280.tsp";
-        final int DRAW_EVERY= 1000;
-        final int PRINT_EVERY= 500;
+        final double CROSS_PROBAB = 0.92;
+        final double MUTATION_PROBAB = 0.02;
+        final String DATASET = "resources/bier127.tsp";
+        final int DRAW_EVERY= 100;
+        final int PRINT_EVERY= 1000;
 
         int numberOfPoints;
         try(Scanner scanner = new Scanner(new File(DATASET))){
@@ -48,9 +47,9 @@ public class Main{
             myFrame = new MyFrame(x, y, maxFrameSize);
 
             Graph graph = new Graph(listOfPoints);
-            for(Point p:graph.getPoints()){
-                myFrame.addCircle(p.getX(), p.getY(), 5);
-            }
+            /*for(Point p:graph.getPoints()){
+                myFrame.addCircle(p.getX(), p.getY(), 2);
+            }*/
             World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT, CROSS_PROBAB, MUTATION_PROBAB);
             world.drawEveryXGenerations(DRAW_EVERY);
             world.printResultEveryXGenerations(PRINT_EVERY);
@@ -63,6 +62,7 @@ public class Main{
                             System.out.print(aBest + " ");
                         }
                         System.out.println();
+                        System.out.println(world.getBestKnownPath().getPathLength());
                     }catch (IllegalStateException e){
                         e.getMessage();
                         e.printStackTrace();
@@ -70,20 +70,6 @@ public class Main{
                 }
             }, "Shutdown-thread"));
             world.run();
-
-            /*Path best = world.getBestPath();
-            for(int i=0; i<best.getPath().size();i++){
-                int temp=best.getIdAt(i);
-                int tempNext;
-                if(i==best.getPath().size()-1){
-                    tempNext = best.getIdAt(0);
-                }else{
-                    tempNext = best.getIdAt(i+1);
-                }
-                Point p = graph.getPointAt(temp);
-                Point pNext = graph.getPointAt(tempNext);
-                myFrame.addLine(p.getX(), p.getY(), pNext.getX(), pNext.getY(), Color.BLACK);
-            }*/
         } catch (FileNotFoundException e) {
             System.err.println("File not found!");
             e.printStackTrace();
