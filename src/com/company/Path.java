@@ -112,20 +112,16 @@ public class Path {
 
     @Override
     public String toString() {
-        String res="";
+        StringBuilder res= new StringBuilder();
         for(int i=0; i<path.size(); i++){
-            res+= path.get(i) + " ";
-            if(i%18==17){
-                res+="\n\r";
-            }
+            res.append(path.get(i)).append(" ");
         }
-        return res;
+        return res.toString();
     }
 
     @Override
     protected Path clone() throws CloneNotSupportedException {
         List<Integer> newList = new ArrayList<>(path);
-        Path path1 = new Path(newList, graph);
-        return path1;
+        return new Path(newList, graph);
     }
 }
