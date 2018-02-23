@@ -40,7 +40,7 @@ and [this](http://www.math.uwaterloo.ca/tsp/vlsi/index.html) sites.
 
 ## License
 
-This project is licensed under the MIT License;
+This project is licensed under the MIT License - [LICENSE](https://github.com/Mixonn/TSP-Genetic-Solution-UHX/blob/master/LICENSE)
 
 ## More
 If you got any improvements, ideas - contribute or tell me about it ;)
