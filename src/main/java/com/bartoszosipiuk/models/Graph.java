@@ -1,4 +1,4 @@
-package com.company.models;
+package com.bartoszosipiuk.models;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;

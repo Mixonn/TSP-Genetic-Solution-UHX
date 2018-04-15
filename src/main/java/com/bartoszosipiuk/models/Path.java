@@ -1,4 +1,4 @@
-package com.company.models;
+package com.bartoszosipiuk.models;
 
 import java.util.ArrayList;
 import java.util.Collections;

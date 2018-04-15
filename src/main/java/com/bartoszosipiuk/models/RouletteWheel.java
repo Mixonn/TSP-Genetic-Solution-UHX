@@ -1,8 +1,5 @@
-package com.company.models;
+package com.bartoszosipiuk.models;
 
-import com.company.models.Path;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 

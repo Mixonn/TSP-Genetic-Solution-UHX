@@ -1,4 +1,4 @@
-package com.company.GUI;
+package com.bartoszosipiuk.GUI;
 
 import javax.swing.*;
 import java.awt.*;

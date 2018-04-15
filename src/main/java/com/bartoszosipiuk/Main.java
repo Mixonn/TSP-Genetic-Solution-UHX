@@ -1,12 +1,12 @@
-package com.company;
+package com.bartoszosipiuk;
 
 
 
-import com.company.GUI.MyFrame;
-import com.company.models.Graph;
-import com.company.models.NoPathGeneratedException;
-import com.company.models.Point;
-import com.company.models.World;
+import com.bartoszosipiuk.GUI.MyFrame;
+import com.bartoszosipiuk.models.Graph;
+import com.bartoszosipiuk.models.NoPathGeneratedException;
+import com.bartoszosipiuk.models.Point;
+import com.bartoszosipiuk.models.World;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
@@ -25,7 +25,7 @@ public class Main{
     public static final int GRAPH_SIZE_MULTIPLIER = 1;
 
     public static void main(String[] args) {
-        List<com.company.models.Point> listOfPoints = new ArrayList<>();
+        List<com.bartoszosipiuk.models.Point> listOfPoints = new ArrayList<>();
 
         int maxFrameSize;
         final int POPULATION_SIZE;

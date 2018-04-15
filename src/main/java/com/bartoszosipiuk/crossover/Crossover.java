@@ -1,4 +1,4 @@
-package com.company.crossover;
+package com.bartoszosipiuk.crossover;
 
 import java.util.Set;
 

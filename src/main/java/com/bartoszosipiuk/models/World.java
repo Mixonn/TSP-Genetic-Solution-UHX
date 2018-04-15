@@ -1,11 +1,7 @@
-package com.company.models;
+package com.bartoszosipiuk.models;
 
-import com.company.Main;
-import com.company.crossover.*;
-import com.company.models.Graph;
-import com.company.models.Path;
-import com.company.models.Point;
-import com.company.models.RouletteWheel;
+import com.bartoszosipiuk.Main;
+import com.bartoszosipiuk.crossover.*;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
@@ -119,18 +115,22 @@ public class World {
             }else{
                 tempNext = bestKnownPath.getIdAt(i+1);
             }
-            com.company.models.Point p = graph.getPointAt(temp);
+            com.bartoszosipiuk.models.Point p = graph.getPointAt(temp);
             Point pNext = graph.getPointAt(tempNext);
             Main.addLine(p.getX(), p.getY(), pNext.getX(), pNext.getY(), Color.BLACK);
         }
     }
     private void printBestResult(){
         if(PRINT_EVERY_X_POINTS==0||currentGenerationNumber%PRINT_EVERY_X_POINTS==1||currentGenerationNumber==generationLimit){
-            log.debug(currentGenerationNumber);
-            log.debug("\t\t B:" + bestKnownPath.getPathLength());
-            log.debug("\t Av: " + averagePathSize);
-            log.debug("\t Un: " + unchangedGenerations);
-            log.debug("\t Mut: " + MUTATION_PROBABILITY);
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(currentGenerationNumber);
+            sb.append("\t\t B:").append(bestKnownPath.getPathLength());
+            sb.append("\t Av: ").append(averagePathSize);
+            sb.append("\t Un: ").append(unchangedGenerations);
+            sb.append("\t Mut: ").append(MUTATION_PROBABILITY);
+
+            log.debug(sb.toString());
         }
         if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
             try{

@@ -1,10 +1,10 @@
-package com.company.GUI;
+package com.bartoszosipiuk.GUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 
-import static com.company.Main.GRAPH_SIZE_MULTIPLIER;
+import static com.bartoszosipiuk.Main.GRAPH_SIZE_MULTIPLIER;
 
 /**
  * Created by Bartosz Osipiuk on 2017-11-20.

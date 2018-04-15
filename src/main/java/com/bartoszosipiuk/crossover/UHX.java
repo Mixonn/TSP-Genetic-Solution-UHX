@@ -1,6 +1,6 @@
-package com.company.crossover;
+package com.bartoszosipiuk.crossover;
 
-import com.company.models.Graph;
+import com.bartoszosipiuk.models.Graph;
 
 import java.util.*;
 
