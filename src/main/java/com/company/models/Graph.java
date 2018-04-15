@@ -1,4 +1,4 @@
-package com.company;
+package com.company.models;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;

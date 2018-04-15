@@ -1,8 +1,8 @@
 package com.company.crossover;
 
-import com.company.Graph;
-import com.company.Path;
-import com.company.Point;
+import com.company.models.Graph;
+import com.company.models.Path;
+import com.company.models.Point;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

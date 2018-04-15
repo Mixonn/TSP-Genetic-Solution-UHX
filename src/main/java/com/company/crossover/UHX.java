@@ -1,7 +1,6 @@
 package com.company.crossover;
 
-import com.company.Graph;
-import com.company.Point;
+import com.company.models.Graph;
 
 import java.util.*;
 

@@ -1,6 +1,11 @@
-package com.company;
+package com.company.models;
 
+import com.company.Main;
 import com.company.crossover.*;
+import com.company.models.Graph;
+import com.company.models.Path;
+import com.company.models.Point;
+import com.company.models.RouletteWheel;
 
 import java.awt.*;
 import java.io.*;
@@ -93,9 +98,9 @@ public class World {
         PRINT_EVERY_X_POINTS = i;
     }
 
-    public Path getBestKnownPath() throws  IllegalStateException{
+    public Path getBestKnownPath() throws  NoPathGeneratedException{
         if(bestKnownPath==null){
-            throw new IllegalStateException("Generic algorithm didn't generate best path yet");
+            throw new NoPathGeneratedException("Generic algorithm didn't generate the path yet");
         }
         return bestKnownPath;
     }
@@ -111,7 +116,7 @@ public class World {
             }else{
                 tempNext = bestKnownPath.getIdAt(i+1);
             }
-            Point p = graph.getPointAt(temp);
+            com.company.models.Point p = graph.getPointAt(temp);
             Point pNext = graph.getPointAt(tempNext);
             Main.addLine(p.getX(), p.getY(), pNext.getX(), pNext.getY(), Color.BLACK);
         }

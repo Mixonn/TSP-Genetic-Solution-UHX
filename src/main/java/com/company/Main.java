@@ -2,33 +2,58 @@ package com.company;
 
 
 
-import com.company.graphic.MyFrame;
+import com.company.GUI.MyFrame;
+import com.company.models.Graph;
+import com.company.models.NoPathGeneratedException;
+import com.company.models.Point;
+import com.company.models.World;
+import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 
 public class Main{
 
-    private final Logger log = Logger.getLogger(getClass().getName());
+    protected static final Logger log = Logger.getLogger(Main.class);
 
-    public static MyFrame myFrame;
+    private static MyFrame myFrame;
     public static final int GRAPH_SIZE_MULTIPLIER = 1;
 
     public static void main(String[] args) {
-        List<Point> listOfPoints = new ArrayList<>();
-        int maxFrameSize = 800;
-        final int POPULATION_SIZE = 22;
-        final long GENERATION_LIMIT = 0;
-        final double CROSS_PROBAB = 0.92;
-        final double MUTATION_PROBAB = 0.02;
-        final String DATASET = "resources/bier127.tsp";
-        final int DRAW_EVERY= 100;
-        final int PRINT_EVERY= 1000;
+        List<com.company.models.Point> listOfPoints = new ArrayList<>();
+
+        int maxFrameSize;
+        final int POPULATION_SIZE;
+        final long GENERATION_LIMIT;
+        final double CROSS_PROBAB;
+        final double MUTATION_PROBAB;
+        final String DATASET;
+        final int DRAW_EVERY;
+        final int PRINT_EVERY;
+
+        try(InputStream input = Main.class.getResourceAsStream("/genetic.properties")){
+            Properties prop = new Properties();
+            prop.load(input);
+            maxFrameSize = Integer.parseInt(prop.getProperty("max_frame_size"));
+            POPULATION_SIZE = Integer.parseInt(prop.getProperty("population_size"));
+            GENERATION_LIMIT = Integer.parseInt(prop.getProperty("generation_limit"));
+            CROSS_PROBAB = Double.parseDouble(prop.getProperty("cross_probab"));
+            MUTATION_PROBAB = Double.parseDouble(prop.getProperty("mutation_probab"));
+            DATASET = prop.getProperty("dataset_path");
+            DRAW_EVERY = Integer.parseInt(prop.getProperty("draw_every"));
+            PRINT_EVERY = Integer.parseInt(prop.getProperty("print_every"));
+
+            log.debug("All properties loaded");
+        } catch (IOException e) {
+            log.fatal(e);
+            return;
+        }
+
 
         int numberOfPoints;
         try(Scanner scanner = new Scanner(new File(DATASET))){
@@ -55,23 +80,22 @@ public class Main{
             world.drawEveryXGenerations(DRAW_EVERY);
             world.printResultEveryXGenerations(PRINT_EVERY);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("The best finded path");
+                StringBuilder sb = new StringBuilder();
                 try {
                     int[] best = world.getBestKnownPath().getPathAsArray();
                     for (int aBest : best) {
-                        System.out.print(aBest + " ");
+                        sb.append(aBest).append(" ");
                     }
-                    System.out.println();
-                    System.out.println(world.getBestKnownPath().getPathLength());
-                }catch (IllegalStateException e){
-                    e.getMessage();
-                    e.printStackTrace();
+                    sb.append("\n");
+                    log.trace("The best found path: \n"+sb.toString());
+                    log.debug("The best path: " + world.getBestKnownPath().getPathLength());
+                }catch (NoPathGeneratedException e){
+                    log.warn(e);
                 }
             }, "Shutdown-thread"));
             world.run();
         } catch (FileNotFoundException e) {
-            System.err.println("File not found!");
-            e.printStackTrace();
+            log.fatal("Dataset not found! " + e);
         }
 
 

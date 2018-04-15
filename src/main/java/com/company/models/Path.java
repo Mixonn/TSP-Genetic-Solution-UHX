@@ -1,4 +1,4 @@
-package com.company;
+package com.company.models;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,7 +78,7 @@ public class Path {
         int secondIndex = ThreadLocalRandom.current().nextInt(path.size());
 
         while(firstIndex==secondIndex){
-            secondIndex = secondIndex = ThreadLocalRandom.current().nextInt(path.size());
+            secondIndex = ThreadLocalRandom.current().nextInt(path.size());
         }
         if(firstIndex>secondIndex){
             int temp = firstIndex;
@@ -119,9 +119,7 @@ public class Path {
         return res.toString();
     }
 
-    @Override
-    protected Path clone() throws CloneNotSupportedException {
-        List<Integer> newList = new ArrayList<>(path);
-        return new Path(newList, graph);
+    public Path clone() throws CloneNotSupportedException {
+        return new Path(new ArrayList<>(path), graph);
     }
 }

@@ -1,6 +1,9 @@
-package com.company;
+package com.company.models;
+
+import com.company.models.Path;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -14,7 +17,7 @@ public class RouletteWheel {
     private double sumOfFitnesses;
 
 
-    public RouletteWheel(ArrayList<Path> population){
+    public RouletteWheel(List<Path> population){
         sumOfFitnesses = 0;
         rouletteItems = new double[population.size()+1];
 

@@ -1,9 +1,7 @@
-package com.company.graphic;
+package com.company.GUI;
 
 import javax.swing.*;
 import java.awt.*;
-
-import static com.company.Main.GRAPH_SIZE_MULTIPLIER;
 
 /**
  * Created by Bartosz Osipiuk on 2017-11-20.
