@@ -39,7 +39,7 @@ class UHXTest {
 
         uhx = new UHX(p1.getPath(), p2.getPath(), graph);
         List<Integer> childList = new ArrayList<>();
-        childList.addAll(uhx.getChild());
+        childList.addAll(uhx.getChilds());
 
         result = new Path(childList, graph);
     }

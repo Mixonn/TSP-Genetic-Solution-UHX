@@ -71,8 +71,8 @@ public class World {
                 MUTATION_PROBABILITY = oldMutProb;
                 CROSSOVER_PROBABILITY = oldCrossProb;
             }else{
-                MUTATION_PROBABILITY = oldMutProb+ ((int)(unchangedGenerations/10000))/1000.0;
-                CROSSOVER_PROBABILITY = oldCrossProb - ((int)(unchangedGenerations/20000))/1000.0;
+                MUTATION_PROBABILITY = oldMutProb+ ((int)(unchangedGenerations/10000.0))/1000.0;
+                CROSSOVER_PROBABILITY = oldCrossProb - ((int)(unchangedGenerations/20000.0))/1000.0;
             }
 
             selection();
@@ -95,7 +95,7 @@ public class World {
 
     public Path getBestKnownPath() throws  IllegalStateException{
         if(bestKnownPath==null){
-            throw new IllegalStateException("Generic algorithm didn`t generate best path yet");
+            throw new IllegalStateException("Generic algorithm didn't generate best path yet");
         }
         return bestKnownPath;
     }
@@ -137,6 +137,7 @@ public class World {
         parents.addAll(childs);
         childs = null;
     }
+
     private void saveBestResult(int generation){
         try(FileWriter fw = new FileWriter("pathsResults.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
@@ -206,7 +207,7 @@ public class World {
         }
 
         RouletteWheel roulette = new RouletteWheel((ArrayList<Path>)parents);
-        int currSpines = childs.size(); //We added the best value to childs
+        int currSpines = childs.size();
         while(currSpines<parents.size()){
             selectionPool.add(parents.get(roulette.pickPathIndex()));
             currSpines++;
@@ -237,7 +238,10 @@ public class World {
                 shortestPath = curr;
             }
         }
-        if(bestKnownPath==null || shortestPath.getPathLength() < bestKnownPath.getPathLength()){ //GOD, i know it can generate null, but it doesnt
+        if(shortestPath==null){
+            return;
+        }
+        if(bestKnownPath==null || shortestPath.getPathLength() < bestKnownPath.getPathLength()){
             try {
                 bestKnownPath = shortestPath.clone();
             } catch (CloneNotSupportedException e) {
@@ -255,32 +259,16 @@ public class World {
         List<Integer> path1Arr = path1.getPath();
         List<Integer> path2Arr = path2.getPath();
 
-        UHX cross = new UHX(path1Arr, path2Arr, graph);
+        Crossover cross = new UHX(path1Arr, path2Arr, graph);
 
         List<Integer> childList = new ArrayList<>();
-        childList.addAll(cross.getChild());
+        childList.addAll(cross.getChilds());
         childs.add(new Path(childList, graph));
     }
 
     private void mutate(Path path1){
         path1.mutateByCircuitInversion();
         childs.add(path1);
-        /*Path p1Copy = path1.clone();
-            Path p2Copy = path2.clone();
-
-            p1Copy.mutateByCircuitInversion();
-            p2Copy.mutateByCircuitInversion();
-
-            if(p1Copy.getPathLength()<path1.getPathLength()){
-                childs.add(p1Copy);
-            }else{
-                childs.add(path1);
-            }
-            if(p2Copy.getPathLength()<path2.getPathLength()){
-                childs.add(p2Copy);
-            }else{
-                childs.add(path2);
-            }*/
     }
 
     private void copy(Path path1){

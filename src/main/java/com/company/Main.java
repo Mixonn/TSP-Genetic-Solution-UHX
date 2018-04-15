@@ -9,12 +9,16 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 
 public class Main{
 
+    private final Logger log = Logger.getLogger(getClass().getName());
+
     public static MyFrame myFrame;
     public static final int GRAPH_SIZE_MULTIPLIER = 1;
+
     public static void main(String[] args) {
         List<Point> listOfPoints = new ArrayList<>();
         int maxFrameSize = 800;
@@ -47,26 +51,21 @@ public class Main{
             myFrame = new MyFrame(x, y, maxFrameSize);
 
             Graph graph = new Graph(listOfPoints);
-            /*for(Point p:graph.getPoints()){
-                myFrame.addCircle(p.getX(), p.getY(), 2);
-            }*/
             World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT, CROSS_PROBAB, MUTATION_PROBAB);
             world.drawEveryXGenerations(DRAW_EVERY);
             world.printResultEveryXGenerations(PRINT_EVERY);
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                public void run() {
-                    System.out.println("The best finded path");
-                    try {
-                        int[] best = world.getBestKnownPath().getPathAsArray();
-                        for (int aBest : best) {
-                            System.out.print(aBest + " ");
-                        }
-                        System.out.println();
-                        System.out.println(world.getBestKnownPath().getPathLength());
-                    }catch (IllegalStateException e){
-                        e.getMessage();
-                        e.printStackTrace();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("The best finded path");
+                try {
+                    int[] best = world.getBestKnownPath().getPathAsArray();
+                    for (int aBest : best) {
+                        System.out.print(aBest + " ");
                     }
+                    System.out.println();
+                    System.out.println(world.getBestKnownPath().getPathLength());
+                }catch (IllegalStateException e){
+                    e.getMessage();
+                    e.printStackTrace();
                 }
             }, "Shutdown-thread"));
             world.run();

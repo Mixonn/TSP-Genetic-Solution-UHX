@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author Bartosz Osipiuk
  */
-public class UHX{
+public class UHX implements Crossover{
     private int bF;
     private int bM;
     private int fF;
@@ -24,8 +24,8 @@ public class UHX{
     Set<Integer> childs;
 
     public UHX(List<Integer> p1, List<Integer> p2, Graph graph){
-        father = new ArrayList(p1);
-        mother = new ArrayList(p2);
+        father = p1;
+        mother = p2;
 
         this.graph = graph;
 
@@ -102,7 +102,7 @@ public class UHX{
 
     }
 
-    public Set<Integer> getChild(){
+    public Set<Integer> getChilds(){
         return childs;
     }
 
