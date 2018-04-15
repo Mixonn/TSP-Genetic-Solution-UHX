@@ -6,6 +6,7 @@ import com.company.models.Graph;
 import com.company.models.Path;
 import com.company.models.Point;
 import com.company.models.RouletteWheel;
+import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.io.*;
@@ -20,6 +21,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public class World {
+    protected final Logger log = Logger.getLogger(this.getClass());
+
     private Graph graph;
     private long generationLimit = Long.MAX_VALUE;
     private long DRAW_EVERY_X_POINTS=0;
@@ -123,11 +126,11 @@ public class World {
     }
     private void printBestResult(){
         if(PRINT_EVERY_X_POINTS==0||currentGenerationNumber%PRINT_EVERY_X_POINTS==1||currentGenerationNumber==generationLimit){
-            System.out.print(currentGenerationNumber);
-            System.out.print("\t\t B:" + bestKnownPath.getPathLength());
-            System.out.print("\t Av: " + averagePathSize);
-            System.out.print("\t Un: " + unchangedGenerations);
-            System.out.println("\t Mut: " + MUTATION_PROBABILITY);
+            log.debug(currentGenerationNumber);
+            log.debug("\t\t B:" + bestKnownPath.getPathLength());
+            log.debug("\t Av: " + averagePathSize);
+            log.debug("\t Un: " + unchangedGenerations);
+            log.debug("\t Mut: " + MUTATION_PROBABILITY);
         }
         if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
             try{
