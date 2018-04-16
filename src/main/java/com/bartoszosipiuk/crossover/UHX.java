@@ -20,7 +20,7 @@ public class UHX implements Crossover {
 
     private Graph graph;
 
-    Set<Integer> childs;
+    private Set<Integer> childs;
 
     public UHX(List<Integer> p1, List<Integer> p2, Graph graph) {
         father = p1;
@@ -34,7 +34,6 @@ public class UHX implements Crossover {
     private void run() {
         SplittableRandom rand = new SplittableRandom();
         int c = rand.nextInt(father.size());
-        double[][] distances = graph.getAllDistances();
         childs = new LinkedHashSet<>();
 
         final int fatherSize = father.size();
@@ -42,9 +41,7 @@ public class UHX implements Crossover {
         setPointers(c);
         childs.add(c);
 
-        int current = father.indexOf(c);
-
-        while (childs.size() < fatherSize) {
+        while(childs.size() < fatherSize) {
             double minDist = Double.MAX_VALUE;
             int flag = -1;
             if (graph.getDistance(c, father.get(bF)) < minDist) {
@@ -66,36 +63,28 @@ public class UHX implements Crossover {
             if (flag == -1) {
                 throw new IllegalStateException("Finding minimum distance fail");
             } else if (flag == 0) {
-                if (childs.contains(father.get(bF))) {
-                    backFather();
-                    continue;
+                if (!childs.contains(father.get(bF))) {
+                    childs.add(father.get(bF));
+                    c = father.get(bF);
                 }
-                childs.add(father.get(bF));
-                c = father.get(bF);
                 backFather();
             } else if (flag == 1) {
-                if (childs.contains(father.get(fF))) {
-                    frontFather();
-                    continue;
+                if (!childs.contains(father.get(fF))) {
+                    childs.add(father.get(fF));
+                    c = father.get(fF);
                 }
-                childs.add(father.get(fF));
-                c = father.get(fF);
                 frontFather();
             } else if (flag == 2) {
-                if (childs.contains(mother.get(bM))) {
-                    backMother();
-                    continue;
+                if (!childs.contains(mother.get(bM))) {
+                    childs.add(mother.get(bM));
+                    c = mother.get(bM);
                 }
-                childs.add(mother.get(bM));
-                c = mother.get(bM);
                 backMother();
             } else {
-                if (childs.contains(mother.get(fM))) {
-                    frontMother();
-                    continue;
+                if (!childs.contains(mother.get(fM))) {
+                    childs.add(mother.get(fM));
+                    c = mother.get(fM);
                 }
-                childs.add(mother.get(fM));
-                c = mother.get(fM);
                 frontMother();
             }
         }
