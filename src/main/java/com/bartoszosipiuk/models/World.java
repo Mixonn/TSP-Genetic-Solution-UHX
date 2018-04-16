@@ -180,20 +180,15 @@ public class World {
                 --toCopy;
             }
         }
-
-
         for(int i=0; i<selectionPool.size(); i++){
             if(i==selectionPool.size()-1){
                 crossover(selectionPool.get(i), selectionPool.get(0));
                 continue;
             }
-
             crossover(selectionPool.get(i), selectionPool.get(i+1));
-
         }
     }
 
-    //Done
     private void selection() {
         selectionPool = new ArrayList<>(populationSize);
         childs = new ArrayList<>();

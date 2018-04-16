@@ -5,13 +5,14 @@ This project contains very simple swing UI (which i will improve soon).
 ## Getting Started
 To run whe algorithm you must declare properties in the genetic.properties file.
 * `` max_frame_size`` - maximum window size
-* ``population_size`` - value between 10-40 (the best results). 
+* ``population_size`` - number of paths of entire generation (the best results for value between 10-40). 
 * ``generation_limit`` - when the generation counter reach the limit - it stops and shows the best result
-* ``cross_probab`` - crossing probability; value between 0.85-0.95
-* ``mutation_probab`` - mutation probability; value between 0.005-0.02
-* ``dataset_path`` - your dataset path
-* ``draw_every`` - defines what number of generations the window will be refreshed (0-window will now refresh)
-* ``print_every`` - defines what number of generations the best path will be printed to console;
+* ``cross_probab`` - crossing probability; (mostly: value between 0.85-0.95)
+* ``mutation_probab`` - mutation probability; (mostly: value between 0.005-0.02)
+* ``dataset_path`` - path to the graph
+* ``draw_every`` - defines what number of generations the window will be refreshed (0-window will not refresh)
+* ``print_every`` - defines what number of generations the best path will be printed to console 
+(0 - nothing will be displayed)
 
 ### Dataset
 Dataset should look as follows:  
