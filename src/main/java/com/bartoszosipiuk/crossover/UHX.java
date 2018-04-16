@@ -47,19 +47,19 @@ public class UHX implements Crossover {
         while (childs.size() < fatherSize) {
             double minDist = Double.MAX_VALUE;
             int flag = -1;
-            if (distances[c][father.get(bF)] < minDist) {
-                minDist = distances[c][father.get(bF)];
+            if (graph.getDistance(c, father.get(bF)) < minDist) {
+                minDist = graph.getDistance(c, father.get(bF));
                 flag = 0;
             }
-            if (distances[c][father.get(fF)] < minDist) {
-                minDist = distances[c][father.get(fF)];
+            if (graph.getDistance(c, father.get(fF)) < minDist) {
+                minDist = graph.getDistance(c, father.get(fF));
                 flag = 1;
             }
-            if (distances[c][mother.get(bM)] < minDist) {
-                minDist = distances[c][mother.get(bM)];
+            if (graph.getDistance(c, mother.get(bM)) < minDist) {
+                minDist = graph.getDistance(c, mother.get(bM));
                 flag = 2;
             }
-            if (distances[c][mother.get(fM)] < minDist) {
+            if (graph.getDistance(c, mother.get(fM)) < minDist) {
                 flag = 3;
             }
 

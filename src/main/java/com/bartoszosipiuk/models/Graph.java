@@ -38,19 +38,26 @@ public class Graph {
 
     public double[][] getAllDistances() {
         if (distances == null) {
-            distances = new double[points.size()][points.size()];
+            distances = new double[points.size()][];
             for (int i = 0; i < points.size(); i++) {
+                distances[i] = new double[i+1];
                 for (int j = 0; j <= i; j++) {
                     if (i == j) {
                         distances[i][j] = 0;
                     } else {
                         distances[i][j] = points.get(i).distance(points.get(j));
-                        distances[j][i] = distances[i][j];
                     }
                 }
             }
         }
         return distances;
+    }
+
+    public double getDistance(int index1, int index2){
+        if(distances==null){
+            getAllDistances();
+        }
+        return (index1>index2)? distances[index1][index2]: distances[index2][index1];
     }
 
     public int size() {
