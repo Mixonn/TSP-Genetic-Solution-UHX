@@ -1,17 +1,17 @@
 # TSP Genetic Solution using UHX crossing
 
 My first genetic algorithm. I am using UHX crossing which is explained [here](https://arxiv.org/ftp/arxiv/papers/1504/1504.02590.pdf).
-This project contains very simple swing interface (which i will improve soon).
+This project contains very simple swing UI (which i will improve soon).
 ## Getting Started
-To run whe algorithm you must declare some final variables which can be find in Main class:
-* `` maxFrameSize`` - maximum window size
-* ``POPULATION_SIZE`` - value between 10-40 (the best results). 
-* ``GENERATION_LIMIT`` - when the generation counter reach the limit - it stops and shows the best result
-* ``CROSS_PROBAB`` - crossing probability; value between 0.85-0.95
-* ``MUTATION_PROBAB`` - mutation probability; value between 0.005-0.02
-* ``DATASET`` - your dataset path
-* ``DRAW_EVERY`` - defines what number of generations the window will be refreshed (0-window will now refresh)
-* ``PRINT_EVERY`` - defines what number of generations the best path will be printed to console;
+To run whe algorithm you must declare properties in the genetic.properties file.
+* `` max_frame_size`` - maximum window size
+* ``population_size`` - value between 10-40 (the best results). 
+* ``generation_limit`` - when the generation counter reach the limit - it stops and shows the best result
+* ``cross_probab`` - crossing probability; value between 0.85-0.95
+* ``mutation_probab`` - mutation probability; value between 0.005-0.02
+* ``dataset_path`` - your dataset path
+* ``draw_every`` - defines what number of generations the window will be refreshed (0-window will now refresh)
+* ``print_every`` - defines what number of generations the best path will be printed to console;
 
 ### Dataset
 Dataset should look as follows:  
@@ -31,8 +31,10 @@ Example:
 Indexes must be ordered from 1! (I will change it soon).  
 In the **resources** directory you can find many instances from [this](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/tsp/)
 and [this](http://www.math.uwaterloo.ca/tsp/vlsi/index.html) sites.
-## You need
+## Used
 * Java 8 (1.8).
+* log4j
+* Maven
 
 ## Author
 
