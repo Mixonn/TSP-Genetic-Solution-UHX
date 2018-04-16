@@ -17,12 +17,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public class World {
-    protected final Logger log = Logger.getLogger(this.getClass());
+    private final Logger log = Logger.getLogger(this.getClass());
 
     private Graph graph;
     private long generationLimit = Long.MAX_VALUE;
-    private long DRAW_EVERY_X_POINTS=0;
-    private long PRINT_EVERY_X_POINTS=0;
+    private final long drawEveryXPoints;
+    private final long printEveryXPoints;
 
     private Path worstCurrentPath = null;
     private Path bestKnownPath = null;
@@ -30,9 +30,9 @@ public class World {
     private double averagePathSize;
     private long unchangedGenerations;
 
-    private final int POPULATION_SIZE;
-    private double CROSSOVER_PROBABILITY;
-    private double MUTATION_PROBABILITY;
+    private final int populationSize;
+    private double crossoverProbability;
+    private double mutationProbability;
 
     private List<Path> parents;
     private List<Path> selectionPool;
@@ -40,10 +40,10 @@ public class World {
 
     public World(Graph graph, int populationSize,
                   long generationLimit, double crossoverProbability,
-                  double mutationProbability){
+                  double mutationProbability, long drawEveryXPoints, long printEveryXPoints){
         this.graph=graph;
-        this.POPULATION_SIZE = populationSize;
-        parents = new ArrayList<>(POPULATION_SIZE);
+        this.populationSize = populationSize;
+        parents = new ArrayList<>(this.populationSize);
 
         worstCurrentPath = null;
         currentGenerationNumber = 0;
@@ -53,10 +53,13 @@ public class World {
             this.generationLimit = generationLimit;
         }
 
-        CROSSOVER_PROBABILITY = crossoverProbability;
-        MUTATION_PROBABILITY = mutationProbability;
+        this.crossoverProbability = crossoverProbability;
+        this.mutationProbability = mutationProbability;
 
-        for(int i = 0; i< POPULATION_SIZE; i++){
+        this.drawEveryXPoints = drawEveryXPoints;
+        this.printEveryXPoints = printEveryXPoints;
+
+        for(int i = 0; i< this.populationSize; i++){
             parents.add(i, this.graph.generateRandomPath());
         }
 
@@ -66,17 +69,17 @@ public class World {
 
     public void run(){
         unchangedGenerations = 0;
-        double oldMutProb = MUTATION_PROBABILITY;
-        double oldCrossProb = CROSSOVER_PROBABILITY;
+        double oldMutProb = mutationProbability;
+        double oldCrossProb = crossoverProbability;
         while(currentGenerationNumber<generationLimit){
             currentGenerationNumber++;
             printBestResult();
             if((int)(unchangedGenerations/10000) == 0){
-                MUTATION_PROBABILITY = oldMutProb;
-                CROSSOVER_PROBABILITY = oldCrossProb;
+                mutationProbability = oldMutProb;
+                crossoverProbability = oldCrossProb;
             }else{
-                MUTATION_PROBABILITY = oldMutProb+ ((int)(unchangedGenerations/10000.0))/1000.0;
-                CROSSOVER_PROBABILITY = oldCrossProb - ((int)(unchangedGenerations/20000.0))/1000.0;
+                mutationProbability = oldMutProb+ ((int)(unchangedGenerations/10000.0))/1000.0;
+                crossoverProbability = oldCrossProb - ((int)(unchangedGenerations/20000.0))/1000.0;
             }
 
             selection();
@@ -88,13 +91,6 @@ public class World {
         }
         printBestResult();
         java.awt.Toolkit.getDefaultToolkit().beep();
-    }
-
-    public void drawEveryXGenerations(long i){
-        DRAW_EVERY_X_POINTS = i;
-    }
-    public void printResultEveryXGenerations(long i){
-        PRINT_EVERY_X_POINTS = i;
     }
 
     public Path getBestKnownPath() throws  NoPathGeneratedException{
@@ -121,22 +117,20 @@ public class World {
         }
     }
     private void printBestResult(){
-        if(PRINT_EVERY_X_POINTS==0||currentGenerationNumber%PRINT_EVERY_X_POINTS==1||currentGenerationNumber==generationLimit){
-            StringBuilder sb = new StringBuilder();
+        if(printEveryXPoints ==0||currentGenerationNumber% printEveryXPoints ==1||currentGenerationNumber==generationLimit){
+            String sb = String.valueOf(currentGenerationNumber) +
+                    "\t\t B:" + bestKnownPath.getPathLength() +
+                    "\t Av: " + averagePathSize +
+                    "\t Un: " + unchangedGenerations +
+                    "\t Mut: " + mutationProbability;
 
-            sb.append(currentGenerationNumber);
-            sb.append("\t\t B:").append(bestKnownPath.getPathLength());
-            sb.append("\t Av: ").append(averagePathSize);
-            sb.append("\t Un: ").append(unchangedGenerations);
-            sb.append("\t Mut: ").append(MUTATION_PROBABILITY);
-
-            log.debug(sb.toString());
+            log.debug(sb);
         }
-        if(DRAW_EVERY_X_POINTS!=0 && currentGenerationNumber%DRAW_EVERY_X_POINTS==1){
+        if(drawEveryXPoints !=0 && currentGenerationNumber% drawEveryXPoints ==1){
             try{
                 drawBestPath();
             }catch (Exception e){
-                e.printStackTrace();
+                log.warn(e);
             }
         }
     }
@@ -154,16 +148,14 @@ public class World {
             out.print(bestKnownPath.getPathLength()+" ");
             out.print( bestKnownPath );
             out.println("]");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warn(e + "\nCannot save results to the file");
         }
     }
 
     private void evolve(){
-        int toMutate = (int)(MUTATION_PROBABILITY * selectionPool.size());
-        double restMutation = (MUTATION_PROBABILITY * selectionPool.size())-toMutate;
+        int toMutate = (int)(mutationProbability * selectionPool.size());
+        double restMutation = (mutationProbability * selectionPool.size())-toMutate;
         if(restMutation>=ThreadLocalRandom.current().nextDouble(1)){
             toMutate++;
         }
@@ -174,7 +166,7 @@ public class World {
             --toMutate;
         }
 
-        double copyProbab = 1-CROSSOVER_PROBABILITY-MUTATION_PROBABILITY;
+        double copyProbab = 1- crossoverProbability - mutationProbability;
         if(copyProbab>0){
             int toCopy = (int)(copyProbab * selectionPool.size());
             double restCopy = (copyProbab * selectionPool.size()*1.0)-toCopy;
@@ -203,7 +195,7 @@ public class World {
 
     //Done
     private void selection() {
-        selectionPool = new ArrayList<>(POPULATION_SIZE);
+        selectionPool = new ArrayList<>(populationSize);
         childs = new ArrayList<>();
         try {
             childs.add(bestKnownPath.clone());
@@ -211,10 +203,10 @@ public class World {
             mutatedBest.mutateByCircuitInversion();
             childs.add(mutatedBest);
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
-        RouletteWheel roulette = new RouletteWheel((ArrayList<Path>)parents);
+        RouletteWheel roulette = new RouletteWheel(parents);
         int currSpines = childs.size();
         while(currSpines<parents.size()){
             selectionPool.add(parents.get(roulette.pickPathIndex()));
@@ -223,7 +215,7 @@ public class World {
 
 
     }
-    //Done
+
     private void updateAllFitnesses(){
         double worstLength = worstCurrentPath.getPathLength();
         for(Path p:parents){
@@ -231,21 +223,20 @@ public class World {
         }
     }
 
-    //Done
     private void updateImportantPathsAndValues(){
         Path longestPath = null;
         Path shortestPath = null;
         double sum=0;
-        for(int i = 0; i< parents.size(); i++){
-            Path curr = parents.get(i);
-            sum+=parents.get(i).getPathLength();
-            if(longestPath==null || (longestPath.getPathLength()<curr.getPathLength())){
+        for (Path curr : parents) {
+            sum += curr.getPathLength();
+            if (longestPath == null || (longestPath.getPathLength() < curr.getPathLength())) {
                 longestPath = curr;
             }
-            if(shortestPath==null || (shortestPath.getPathLength()>curr.getPathLength())){
+            if (shortestPath == null || (shortestPath.getPathLength() > curr.getPathLength())) {
                 shortestPath = curr;
             }
         }
+
         if(shortestPath==null){
             return;
         }
@@ -253,7 +244,7 @@ public class World {
             try {
                 bestKnownPath = shortestPath.clone();
             } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
+                log.error(e);
             }
             unchangedGenerations=0;
         }else{
@@ -282,7 +273,4 @@ public class World {
     private void copy(Path path1){
         childs.add(path1);
     }
-
-
-
 }

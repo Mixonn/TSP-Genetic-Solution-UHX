@@ -11,9 +11,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Graph {
     private final List<Point> points;
-    private double[][] distances=null;
+    private double[][] distances = null;
 
-    public Graph(List<Point> points){
+    public Graph(List<Point> points) {
         this.points = points;
     }
 
@@ -21,14 +21,14 @@ public class Graph {
         return Collections.unmodifiableList(points);
     }
 
-    public Point getPointAt(int index){
+    public Point getPointAt(int index) {
         return points.get(index);
     }
 
-    public Path generateRandomPath(){
+    public Path generateRandomPath() {
         List<Point> listHelper = new LinkedList<>(points);
         List<Integer> result = new ArrayList<>();
-        for(int i=0; i<points.size(); i++){
+        for (int i = 0; i < points.size(); i++) {
             int randomNumber = ThreadLocalRandom.current().nextInt(0, listHelper.size());
             result.add(i, listHelper.get(randomNumber).getId());
             listHelper.remove(randomNumber);
@@ -36,8 +36,8 @@ public class Graph {
         return new Path(result, this);
     }
 
-    public double[][] getAllDistances(){
-        if(distances==null) {
+    public double[][] getAllDistances() {
+        if (distances == null) {
             distances = new double[points.size()][points.size()];
             for (int i = 0; i < points.size(); i++) {
                 for (int j = 0; j <= i; j++) {
@@ -53,7 +53,7 @@ public class Graph {
         return distances;
     }
 
-    public int size(){
+    public int size() {
         return points.size();
     }
 }

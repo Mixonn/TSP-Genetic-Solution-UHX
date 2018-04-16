@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.GUI;
+package com.bartoszosipiuk.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,8 +36,8 @@ public class GraphComponent extends JComponent {
     }
 
     public void addLine(int x1, int y1, int x2, int y2, Color color) {
-        lines.add(new Line(x1*GRAPH_SIZE_MULTIPLIER, y1*GRAPH_SIZE_MULTIPLIER,
-                x2*GRAPH_SIZE_MULTIPLIER, y2*GRAPH_SIZE_MULTIPLIER, color));
+        lines.add(new Line(x1 * GRAPH_SIZE_MULTIPLIER, y1 * GRAPH_SIZE_MULTIPLIER,
+                x2 * GRAPH_SIZE_MULTIPLIER, y2 * GRAPH_SIZE_MULTIPLIER, color));
         repaint();
     }
 
@@ -57,7 +57,7 @@ public class GraphComponent extends JComponent {
             for (int i = 0; i < circles.size(); i++) {
                 g.drawOval(circles.get(i).x, circles.get(i).y, circles.get(i).r, circles.get(i).r);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             System.err.println("Some drawing problems (SWING)");
         }
@@ -81,11 +81,11 @@ public class GraphComponent extends JComponent {
     private final LinkedList<Circle> circles = new LinkedList<Circle>();
 
     public void addCircle(int x1, int x2, int r) {
-        addCircle(x1*GRAPH_SIZE_MULTIPLIER, x2*GRAPH_SIZE_MULTIPLIER, r, Color.black);
+        addCircle(x1 * GRAPH_SIZE_MULTIPLIER, x2 * GRAPH_SIZE_MULTIPLIER, r, Color.black);
     }
 
     public void addCircle(int x1, int y1, int r, Color color) {
-        circles.add(new Circle(x1*GRAPH_SIZE_MULTIPLIER, y1*GRAPH_SIZE_MULTIPLIER, r, color));
+        circles.add(new Circle(x1 * GRAPH_SIZE_MULTIPLIER, y1 * GRAPH_SIZE_MULTIPLIER, r, color));
         repaint();
     }
 

@@ -1,8 +1,7 @@
 package com.bartoszosipiuk;
 
 
-
-import com.bartoszosipiuk.GUI.MyFrame;
+import com.bartoszosipiuk.gui.MyFrame;
 import com.bartoszosipiuk.models.Graph;
 import com.bartoszosipiuk.models.NoPathGeneratedException;
 import com.bartoszosipiuk.models.Point;
@@ -17,7 +16,7 @@ import java.util.Properties;
 import java.util.Scanner;
 
 
-public class Main{
+public class Main {
 
     protected static final Logger log = Logger.getLogger(Main.class);
 
@@ -36,7 +35,7 @@ public class Main{
         final int DRAW_EVERY;
         final int PRINT_EVERY;
 
-        try(InputStream input = Main.class.getResourceAsStream("/genetic.properties")){
+        try (InputStream input = Main.class.getResourceAsStream("/genetic.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             maxFrameSize = Integer.parseInt(prop.getProperty("max_frame_size"));
@@ -56,18 +55,18 @@ public class Main{
 
 
         int numberOfPoints;
-        try(Scanner scanner = new Scanner(new File(DATASET))){
+        try (Scanner scanner = new Scanner(new File(DATASET))) {
             numberOfPoints = scanner.nextInt();
-            int x=Integer.MIN_VALUE;
+            int x = Integer.MIN_VALUE;
             int y = Integer.MIN_VALUE;
-            for(int i=0; i<numberOfPoints; i++) {
-                int sID = scanner.nextInt()-1;
+            for (int i = 0; i < numberOfPoints; i++) {
+                int sID = scanner.nextInt() - 1;
                 int sX = scanner.nextInt();
                 int sY = scanner.nextInt();
-                if(sX>x){
+                if (sX > x) {
                     x = sX;
                 }
-                if(sY>y){
+                if (sY > y) {
                     y = sY;
                 }
                 listOfPoints.add(new Point(sID, sX, sY));
@@ -76,9 +75,8 @@ public class Main{
             myFrame = new MyFrame(x, y, maxFrameSize);
 
             Graph graph = new Graph(listOfPoints);
-            World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT, CROSS_PROBAB, MUTATION_PROBAB);
-            world.drawEveryXGenerations(DRAW_EVERY);
-            world.printResultEveryXGenerations(PRINT_EVERY);
+            World world = new World(graph, POPULATION_SIZE, GENERATION_LIMIT,
+                    CROSS_PROBAB, MUTATION_PROBAB, DRAW_EVERY, PRINT_EVERY);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 StringBuilder sb = new StringBuilder();
                 try {
@@ -87,9 +85,9 @@ public class Main{
                         sb.append(aBest).append(" ");
                     }
                     sb.append("\n");
-                    log.trace("The best found path: \n"+sb.toString());
+                    log.trace("The best found path: \n" + sb.toString());
                     log.debug("The best path: " + world.getBestKnownPath().getPathLength());
-                }catch (NoPathGeneratedException e){
+                } catch (NoPathGeneratedException e) {
                     log.warn(e);
                 }
             }, "Shutdown-thread"));
@@ -99,19 +97,19 @@ public class Main{
         }
 
 
-
     }
 
-    public static void addLine(int x1, int y1, int x2, int y2, Color color){
-        myFrame.addLine(x1,y1,x2,y2,color);
+    public static void addLine(int x1, int y1, int x2, int y2, Color color) {
+        myFrame.addLine(x1, y1, x2, y2, color);
     }
-    public static void clearFrame(){
+
+    public static void clearFrame() {
         myFrame.removeAll();
         myFrame.revalidate();
         myFrame.repaint();
     }
 
-    public static void clearLines(){
+    public static void clearLines() {
         myFrame.clearLines();
     }
 }
