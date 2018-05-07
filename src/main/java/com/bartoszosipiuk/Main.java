@@ -2,10 +2,8 @@ package com.bartoszosipiuk;
 
 
 import com.bartoszosipiuk.gui.MyFrame;
-import com.bartoszosipiuk.models.Graph;
-import com.bartoszosipiuk.models.NoPathGeneratedException;
+import com.bartoszosipiuk.models.*;
 import com.bartoszosipiuk.models.Point;
-import com.bartoszosipiuk.models.World;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
@@ -94,6 +92,8 @@ public class Main {
             world.run();
         } catch (FileNotFoundException e) {
             log.fatal("Dataset not found! " + e);
+        } catch (MissedIdException e) {
+            log.fatal("Dataset is not correct. Missing ID on the path");
         }
 
 

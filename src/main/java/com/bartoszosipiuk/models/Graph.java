@@ -13,8 +13,16 @@ public class Graph {
     private final List<Point> points;
     private double[][] distances = null;
 
-    public Graph(List<Point> points) {
-        this.points = points;
+    public Graph(List<Point> points) throws MissedIdException {
+        this.points = new ArrayList<>(points.size());
+        for(Point p:points){
+            this.points.add(p.getId(), p);
+        }
+        for(int i=0; i<points.size(); i++){
+            if(this.points.get(i) == null){
+                throw new MissedIdException("Missing ID on data path");
+            }
+        }
     }
 
     public List<Point> getPoints() {
