@@ -33,7 +33,7 @@ public class Graph {
         return points.get(index);
     }
 
-    public Path generateRandomPath() {
+    public List<Integer> generateRandomPath() {
         List<Point> listHelper = new LinkedList<>(points);
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
@@ -41,7 +41,7 @@ public class Graph {
             result.add(i, listHelper.get(randomNumber).getId());
             listHelper.remove(randomNumber);
         }
-        return new Path(result, this);
+        return result;
     }
 
     public double[][] getAllDistances() {

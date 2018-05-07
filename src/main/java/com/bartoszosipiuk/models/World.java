@@ -60,7 +60,7 @@ public class World {
         this.printEveryXPoints = printEveryXPoints;
 
         for(int i = 0; i< this.populationSize; i++){
-            parents.add(i, this.graph.generateRandomPath());
+            parents.add(i, new Path(this.graph.generateRandomPath(), this.graph));
         }
 
         updateImportantPathsAndValues();

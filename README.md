@@ -36,6 +36,7 @@ and [this](http://www.math.uwaterloo.ca/tsp/vlsi/index.html) sites.
 * Java 8 (1.8).
 * log4j
 * Maven
+* JUnit with Mockito
 
 ## Author
 
