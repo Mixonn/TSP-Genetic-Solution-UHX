@@ -11,13 +11,13 @@ import static org.mockito.Mockito.*;
 
 import static org.junit.Assert.*;
 
-class GraphTest {
+public class GraphTest {
 
-    Graph graph;
-    List<Point> points;
+    static Graph graph;
+    static List<Point> points;
 
     @BeforeClass
-    public void beforeClass(){
+    static public void beforeClass(){
         points = new ArrayList<>();
         for(int i=0; i<3; i++){
             Point p = mock(Point.class);
@@ -32,11 +32,15 @@ class GraphTest {
         graph = new Graph(points);
     }
 
-    @Test(expected = MissedIdException.class)
-    public void shouldThrowExceptionWhenIdOnPathIsMissing() throws MissedIdException {
+    @Test
+    public void shouldThrowExceptionWhenIdOnPathIsMissing() {
         ArrayList<Point> tmp = new ArrayList<>();
         tmp.add(points.get(1));
-        graph = new Graph(tmp);
+        try {
+            graph = new Graph(tmp);
+            fail("The MissedIdException should be thrown when there is missing id in the path");
+        } catch (MissedIdException e) {
+        }
     }
 
     @Test
@@ -54,6 +58,4 @@ class GraphTest {
     public void shouldReturnCorrectDistanceBetweenTwoPoints(){
         assertEquals(2, graph.getDistance(1,2), 0);
     }
-
-    //Todo getAllDistances ;)
 }

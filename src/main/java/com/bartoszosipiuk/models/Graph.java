@@ -15,9 +15,15 @@ public class Graph {
 
     public Graph(List<Point> points) throws MissedIdException {
         this.points = new ArrayList<>(points.size());
-        for(Point p:points){
-            this.points.add(p.getId(), p);
+
+        for(int i=0; i<points.size(); i++){
+            if(points.get(i).getId() != i){
+                throw new MissedIdException("Missing ID on data path");
+            }
+            this.points.add(points.get(i).getId(), points.get(i));
         }
+
+
         for(int i=0; i<points.size(); i++){
             if(this.points.get(i) == null){
                 throw new MissedIdException("Missing ID on data path");
@@ -44,7 +50,18 @@ public class Graph {
         return result;
     }
 
-    public double[][] getAllDistances() {
+    public double getDistance(int index1, int index2){
+        if(distances==null){
+            getAllDistances();
+        }
+        return (index1>index2)? distances[index1][index2]: distances[index2][index1];
+    }
+
+    public int size() {
+        return points.size();
+    }
+
+    private double[][] getAllDistances() {
         if (distances == null) {
             distances = new double[points.size()][];
             for (int i = 0; i < points.size(); i++) {
@@ -59,16 +76,5 @@ public class Graph {
             }
         }
         return distances;
-    }
-
-    public double getDistance(int index1, int index2){
-        if(distances==null){
-            getAllDistances();
-        }
-        return (index1>index2)? distances[index1][index2]: distances[index2][index1];
-    }
-
-    public int size() {
-        return points.size();
     }
 }
