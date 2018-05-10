@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.models;
+package com.bartoszosipiuk.model;
 
 /**
  * Created by Bartosz Osipiuk on 2017-11-18.
@@ -7,25 +7,26 @@ package com.bartoszosipiuk.models;
  */
 
 public class Point {
-    private final int x, y, id;
-
+    private final int x;
+    private final int y;
+    private final int id;
     public Point(int id, int x, int y){
         this.id = id;
         this.x = x;
         this.y = y;
     }
 
-    public double distance(Point p){
+    double distance(Point p){
         return Math.sqrt(Math.pow((this.x-p.getX()),2)+Math.pow((this.y-p.getY()),2));
     }
 
-    public int getX() {
+    int getX() {
         return x;
     }
-    public int getY() {
+    int getY() {
         return y;
     }
-    public int getId() {
+    int getId() {
         return id;
     }
 

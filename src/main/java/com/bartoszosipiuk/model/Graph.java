@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.models;
+package com.bartoszosipiuk.model;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,11 +35,11 @@ public class Graph {
         return Collections.unmodifiableList(points);
     }
 
-    public Point getPointAt(int index) {
+    Point getPointAt(int index) {
         return points.get(index);
     }
 
-    public List<Integer> generateRandomPath() {
+    List<Integer> generateRandomPath() {
         List<Point> listHelper = new LinkedList<>(points);
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
@@ -52,7 +52,7 @@ public class Graph {
 
     public double getDistance(int index1, int index2){
         if(distances==null){
-            getAllDistances();
+            calculateDistances();
         }
         return (index1>index2)? distances[index1][index2]: distances[index2][index1];
     }
@@ -61,7 +61,7 @@ public class Graph {
         return points.size();
     }
 
-    private double[][] getAllDistances() {
+    private void calculateDistances() {
         if (distances == null) {
             distances = new double[points.size()][];
             for (int i = 0; i < points.size(); i++) {
@@ -75,6 +75,5 @@ public class Graph {
                 }
             }
         }
-        return distances;
     }
 }

@@ -13,6 +13,8 @@ To run whe algorithm you must declare properties in the genetic.properties file.
 * ``draw_every`` - defines what number of generations the window will be refreshed (0-window will not refresh)
 * ``print_every`` - defines what number of generations the best path will be printed to console 
 (0 - nothing will be displayed)
+* ``print_best_path_on_shutdown`` - true if the best found path should be printed, false if not. The best
+path will be printed on the log4j [TRACE];
 
 ### Dataset
 Dataset should look as follows:  

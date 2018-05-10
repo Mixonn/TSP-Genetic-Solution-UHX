@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.models;
+package com.bartoszosipiuk.model;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -13,8 +13,8 @@ import static org.junit.Assert.*;
 
 public class GraphTest {
 
-    static Graph graph;
-    static List<Point> points;
+    private static Graph graph;
+    private static List<Point> points;
 
     @BeforeClass
     static public void beforeClass(){

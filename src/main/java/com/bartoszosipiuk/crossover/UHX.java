@@ -1,6 +1,6 @@
 package com.bartoszosipiuk.crossover;
 
-import com.bartoszosipiuk.models.Graph;
+import com.bartoszosipiuk.model.Graph;
 
 import java.util.*;
 
@@ -10,6 +10,14 @@ import java.util.*;
  * @author Bartosz Osipiuk
  */
 public class UHX implements Crossover {
+    private enum MinDistFlag {
+        ERROR,
+        BACK_FATHER,
+        BACK_MOTHER,
+        FRONT_FATHER,
+        FRONT_MOTHER
+    }
+
     private int bF;
     private int bM;
     private int fF;
@@ -17,14 +25,18 @@ public class UHX implements Crossover {
 
     private List<Integer> father;
     private List<Integer> mother;
+    private final int fatherSize;
 
     private Graph graph;
 
     private Set<Integer> childs;
 
+    private int currentPointIndex;
+
     public UHX(List<Integer> p1, List<Integer> p2, Graph graph) {
         father = p1;
         mother = p2;
+        fatherSize = father.size();
 
         this.graph = graph;
 
@@ -33,62 +45,68 @@ public class UHX implements Crossover {
 
     private void run() {
         SplittableRandom rand = new SplittableRandom();
-        int c = rand.nextInt(father.size());
+        currentPointIndex = rand.nextInt(father.size());
         childs = new LinkedHashSet<>();
 
-        final int fatherSize = father.size();
+        setPointers(currentPointIndex);
+        childs.add(currentPointIndex);
 
-        setPointers(c);
-        childs.add(c);
-
-        while(childs.size() < fatherSize) {
-            double minDist = Double.MAX_VALUE;
-            int flag = -1;
-            if (graph.getDistance(c, father.get(bF)) < minDist) {
-                minDist = graph.getDistance(c, father.get(bF));
-                flag = 0;
-            }
-            if (graph.getDistance(c, father.get(fF)) < minDist) {
-                minDist = graph.getDistance(c, father.get(fF));
-                flag = 1;
-            }
-            if (graph.getDistance(c, mother.get(bM)) < minDist) {
-                minDist = graph.getDistance(c, mother.get(bM));
-                flag = 2;
-            }
-            if (graph.getDistance(c, mother.get(fM)) < minDist) {
-                flag = 3;
-            }
-
-            if (flag == -1) {
-                throw new IllegalStateException("Finding minimum distance fail");
-            } else if (flag == 0) {
-                if (!childs.contains(father.get(bF))) {
-                    childs.add(father.get(bF));
-                    c = father.get(bF);
-                }
-                backFather();
-            } else if (flag == 1) {
-                if (!childs.contains(father.get(fF))) {
-                    childs.add(father.get(fF));
-                    c = father.get(fF);
-                }
-                frontFather();
-            } else if (flag == 2) {
-                if (!childs.contains(mother.get(bM))) {
-                    childs.add(mother.get(bM));
-                    c = mother.get(bM);
-                }
-                backMother();
-            } else {
-                if (!childs.contains(mother.get(fM))) {
-                    childs.add(mother.get(fM));
-                    c = mother.get(fM);
-                }
-                frontMother();
-            }
+        while (childs.size() < fatherSize) {
+            addTheShortestPathToNewGeneration(checkTheShortestOption());
         }
 
+    }
+
+    private void addTheShortestPathToNewGeneration(MinDistFlag flag) {
+        if (flag == MinDistFlag.ERROR) {
+            throw new IllegalStateException("Finding minimum distance fail");
+        } else if (flag == MinDistFlag.BACK_FATHER) {
+            if (!childs.contains(father.get(bF))) {
+                childs.add(father.get(bF));
+                currentPointIndex = father.get(bF);
+            }
+            backFather();
+        } else if (flag == MinDistFlag.FRONT_FATHER) {
+            if (!childs.contains(father.get(fF))) {
+                childs.add(father.get(fF));
+                currentPointIndex = father.get(fF);
+            }
+            frontFather();
+        } else if (flag == MinDistFlag.BACK_MOTHER) {
+            if (!childs.contains(mother.get(bM))) {
+                childs.add(mother.get(bM));
+                currentPointIndex = mother.get(bM);
+            }
+            backMother();
+        } else {
+            if (!childs.contains(mother.get(fM))) {
+                childs.add(mother.get(fM));
+                currentPointIndex = mother.get(fM);
+            }
+            frontMother();
+        }
+    }
+
+
+    private MinDistFlag checkTheShortestOption() {
+        MinDistFlag flag = MinDistFlag.ERROR;
+        double minDist = Double.MAX_VALUE;
+        if (graph.getDistance(currentPointIndex, father.get(bF)) < minDist) {
+            minDist = graph.getDistance(currentPointIndex, father.get(bF));
+            flag = MinDistFlag.BACK_FATHER;
+        }
+        if (graph.getDistance(currentPointIndex, father.get(fF)) < minDist) {
+            minDist = graph.getDistance(currentPointIndex, father.get(fF));
+            flag = MinDistFlag.FRONT_FATHER;
+        }
+        if (graph.getDistance(currentPointIndex, mother.get(bM)) < minDist) {
+            minDist = graph.getDistance(currentPointIndex, mother.get(bM));
+            flag = MinDistFlag.BACK_MOTHER;
+        }
+        if (graph.getDistance(currentPointIndex, mother.get(fM)) < minDist) {
+            flag = MinDistFlag.FRONT_MOTHER;
+        }
+        return flag;
     }
 
     public Set<Integer> getChilds() {
@@ -107,6 +125,7 @@ public class UHX implements Crossover {
         backMother();
         frontMother();
     }
+
 
     private void backFather() {
         int i = bF - 1;

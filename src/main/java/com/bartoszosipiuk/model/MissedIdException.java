@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.models;
+package com.bartoszosipiuk.model;
 
 /**
  * Created by Bartosz Osipiuk on 2018-05-07.

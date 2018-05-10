@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.models;
+package com.bartoszosipiuk.model;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -9,13 +9,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Bartosz Osipiuk
  */
 
-public class RouletteWheel {
+class RouletteWheel {
     private double[] rouletteItems;
-    private double sumOfFitnesses;
 
-
-    public RouletteWheel(List<Path> population){
-        sumOfFitnesses = 0;
+    RouletteWheel(List<Path> population){
+        double sumOfFitnesses = 0;
         rouletteItems = new double[population.size()+1];
 
         for(Path path: population){
@@ -28,7 +26,7 @@ public class RouletteWheel {
 
 
         if(sumOfFitnesses == 0.0){
-            for(Path path: population){
+            for(int i=0; i<population.size(); i++){
                 rouletteItems[nextIndex] = 0.0;
                 nextIndex++;
             }
@@ -43,7 +41,7 @@ public class RouletteWheel {
         }
     }
 
-    public int pickPathIndex(){
+    int pickPathIndex(){
         return getParentIndex(ThreadLocalRandom.current().nextDouble());
     }
 
