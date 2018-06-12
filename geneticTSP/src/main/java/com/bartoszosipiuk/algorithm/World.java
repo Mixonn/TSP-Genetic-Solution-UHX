@@ -1,12 +1,11 @@
-package com.bartoszosipiuk.model;
+package com.bartoszosipiuk.algorithm;
 
-import com.bartoszosipiuk.Main;
-import com.bartoszosipiuk.crossover.*;
+import com.bartoszosipiuk.model.crossover.*;
+import com.bartoszosipiuk.model.*;
 import org.apache.log4j.Logger;
 
-import java.awt.*;
-import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,6 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class World {
     private final Logger log = Logger.getLogger(this.getClass());
+
+    private List<GeneticAlgorithmListener> listeners;
 
     private Graph graph;
     private long generationLimit = Long.MAX_VALUE;
@@ -41,6 +42,8 @@ public class World {
     public World(Graph graph, int populationSize,
                  long generationLimit, double crossoverProbability,
                  double mutationProbability, long drawEveryXPoints, long printEveryXPoints) {
+        listeners = new LinkedList<>();
+
         this.graph = graph;
         this.populationSize = populationSize;
         parents = new ArrayList<>(this.populationSize);
@@ -58,22 +61,20 @@ public class World {
 
         this.drawEveryXPoints = drawEveryXPoints;
         this.printEveryXPoints = printEveryXPoints;
-
-        for (int i = 0; i < this.populationSize; i++) {
-            parents.add(i, new Path(this.graph.generateRandomPath(), this.graph));
-        }
-
-        updateImportantPathsAndValues();
-        updateAllFitnesses();
     }
 
     public void run() {
+        for (int i = 0; i < this.populationSize; i++) {
+            parents.add(i, new Path(this.graph.generateRandomPath(), this.graph));
+        }
+        updateImportantPathsAndValues();
+        updateAllFitnesses();
         unchangedGenerations = 0;
         double oldMutProb = mutationProbability;
         double oldCrossProb = crossoverProbability;
         while (currentGenerationNumber < generationLimit) {
             currentGenerationNumber++;
-            printBestResult();
+            logBestResult();
             if ((int) (unchangedGenerations / 10000) == 0) {
                 mutationProbability = oldMutProb;
                 crossoverProbability = oldCrossProb;
@@ -89,35 +90,28 @@ public class World {
             updateImportantPathsAndValues();
             updateAllFitnesses();
         }
-        printBestResult();
+        logBestResult();
         java.awt.Toolkit.getDefaultToolkit().beep();
     }
 
     public Path getBestKnownPath() throws NoPathGeneratedException {
         if (bestKnownPath == null) {
-            throw new NoPathGeneratedException("Generic algorithm didn't generate the path yet");
+            throw new NoPathGeneratedException("Generic model didn't generate the path yet");
         }
         return bestKnownPath;
     }
 
+    public void addListener(GeneticAlgorithmListener listener){
+        this.listeners.add(listener);
+    }
 
     private void drawBestPath() {
-        Main.clearLines();
-        for (int i = 0; i < bestKnownPath.getOrderedPointsList().size(); i++) {
-            int temp = bestKnownPath.getIdAt(i);
-            int tempNext;
-            if (i == bestKnownPath.getOrderedPointsList().size() - 1) {
-                tempNext = bestKnownPath.getIdAt(0);
-            } else {
-                tempNext = bestKnownPath.getIdAt(i + 1);
-            }
-            com.bartoszosipiuk.model.Point p = graph.getPointAt(temp);
-            Point pNext = graph.getPointAt(tempNext);
-            Main.addLine(p.getX(), p.getY(), pNext.getX(), pNext.getY(), Color.BLACK);
+        for(GeneticAlgorithmListener listener : listeners){
+            listener.drawCurrentBestPath(bestKnownPath);
         }
     }
 
-    private void printBestResult() {
+    private void logBestResult() {
         if (printEveryXPoints == 0 || currentGenerationNumber % printEveryXPoints == 1 || currentGenerationNumber == generationLimit) {
             String sb = String.valueOf(currentGenerationNumber) +
                     "\t\t B:" + bestKnownPath.getPathLength() +
@@ -144,7 +138,7 @@ public class World {
 
     private void evolve() {
         int toMutate = (int) (mutationProbability * selectionPool.size());
-        double restMutation = (mutationProbability * selectionPool.size()) - toMutate;
+        double restMutation = (mutationProbability * selectionPool.size()*1.0) - toMutate;
         if (restMutation >= ThreadLocalRandom.current().nextDouble(1)) {
             toMutate++;
         }

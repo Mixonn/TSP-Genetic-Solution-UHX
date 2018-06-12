@@ -1,9 +1,10 @@
 # TSP Genetic Solution using UHX crossing
 
 My first genetic algorithm. I am using UHX crossing which is explained [here](https://arxiv.org/ftp/arxiv/papers/1504/1504.02590.pdf).
-This project contains very simple swing UI (which i will improve soon).
+This project contains very simple swing UI (which i will improve soon). 
+Contains geneticApp and geneticTSP modules.
 ## Getting Started
-To run whe algorithm you must declare properties in the genetic.properties file.
+To run whe algorithm you must declare properties in the genetic.properties file (geneticApp module).
 * `` max_frame_size`` - maximum window size
 * ``population_size`` - number of paths of entire generation (the best results for value between 10-40). 
 * ``generation_limit`` - when the generation counter reach the limit - it stops and shows the best result
@@ -13,7 +14,7 @@ To run whe algorithm you must declare properties in the genetic.properties file.
 * ``draw_every`` - defines what number of generations the window will be refreshed (0-window will not refresh)
 * ``print_every`` - defines what number of generations the best path will be printed to console 
 (0 - nothing will be displayed)
-* ``print_best_path_on_shutdown`` - true if the best found path should be printed, false if not. The best
+* ``print_best_path_on_shutdown`` - ***true*** if the best found path should be printed, ***false*** if not. The best
 path will be printed on the log4j [TRACE];
 
 ### Dataset
@@ -31,7 +32,7 @@ Example:
 2 22 41
 3 124 1
 ````
-Indexes must be ordered from 1! (I will change it soon).  
+Indexes must be ordered from 1!
 In the **resources** directory you can find many instances from [this](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/tsp/)
 and [this](http://www.math.uwaterloo.ca/tsp/vlsi/index.html) sites.
 ## Used
@@ -39,6 +40,7 @@ and [this](http://www.math.uwaterloo.ca/tsp/vlsi/index.html) sites.
 * log4j
 * Maven
 * JUnit with Mockito
+* Lombok 
 
 ## Author
 

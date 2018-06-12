@@ -35,11 +35,11 @@ public class Graph {
         return Collections.unmodifiableList(points);
     }
 
-    Point getPointAt(int index) {
+    public Point getPointAt(int index) {
         return points.get(index);
     }
 
-    List<Integer> generateRandomPath() {
+    public List<Integer> generateRandomPath() {
         List<Point> listHelper = new LinkedList<>(points);
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {

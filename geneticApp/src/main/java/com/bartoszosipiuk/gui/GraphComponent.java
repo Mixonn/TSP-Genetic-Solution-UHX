@@ -1,10 +1,9 @@
 package com.bartoszosipiuk.gui;
 
+import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
-
-import static com.bartoszosipiuk.Main.GRAPH_SIZE_MULTIPLIER;
 
 /**
  * Created by Bartosz Osipiuk on 2017-11-20.
@@ -13,6 +12,19 @@ import static com.bartoszosipiuk.Main.GRAPH_SIZE_MULTIPLIER;
  */
 
 public class GraphComponent extends JComponent {
+    private static final Logger log = Logger.getLogger(GraphComponent.class);
+    public final int GRAPH_SIZE_MULTIPLIER;
+
+    public GraphComponent(int graphSizeMultiplier){
+        this.GRAPH_SIZE_MULTIPLIER = graphSizeMultiplier;
+    }
+
+    public GraphComponent(){
+        this.GRAPH_SIZE_MULTIPLIER = 1;
+    }
+
+
+
     private static class Line {
         final int x1;
         final int y1;
@@ -29,11 +41,7 @@ public class GraphComponent extends JComponent {
         }
     }
 
-    private final LinkedList<Line> lines = new LinkedList<Line>();
-
-    public void addLine(int x1, int x2, int x3, int x4) {
-        addLine(x1, x2, x3, x4, Color.black);
-    }
+    private final LinkedList<Line> lines = new LinkedList<>();
 
     public void addLine(int x1, int y1, int x2, int y2, Color color) {
         lines.add(new Line(x1 * GRAPH_SIZE_MULTIPLIER, y1 * GRAPH_SIZE_MULTIPLIER,
@@ -50,16 +58,16 @@ public class GraphComponent extends JComponent {
     protected void paintComponent(Graphics g) {
         try {
             super.paintComponent(g);
-            for (int i = 0; i < lines.size(); i++) {
-                g.setColor(lines.get(i).color);
-                g.drawLine(lines.get(i).x1, lines.get(i).y1, lines.get(i).x2, lines.get(i).y2);
+            for (Line line : lines) {
+                g.setColor(line.color);
+                g.drawLine(line.x1, line.y1, line.x2, line.y2);
             }
-            for (int i = 0; i < circles.size(); i++) {
-                g.drawOval(circles.get(i).x, circles.get(i).y, circles.get(i).r, circles.get(i).r);
+            for (Circle circle : circles) {
+                g.drawOval(circle.x, circle.y, circle.r, circle.r);
             }
         } catch (Exception e) {
             e.getMessage();
-            System.err.println("Some drawing problems (SWING)");
+            log.warn("Some drawing problems (SWING): {}", e);
         }
 
     }
@@ -70,7 +78,7 @@ public class GraphComponent extends JComponent {
         final int r;
         final Color color;
 
-        public Circle(int x1, int y1, int r, Color color) {
+        Circle(int x1, int y1, int r, Color color) {
             this.x = x1;
             this.y = y1;
             this.r = r;
@@ -78,7 +86,7 @@ public class GraphComponent extends JComponent {
         }
     }
 
-    private final LinkedList<Circle> circles = new LinkedList<Circle>();
+    private final LinkedList<Circle> circles = new LinkedList<>();
 
     public void addCircle(int x1, int x2, int r) {
         addCircle(x1 * GRAPH_SIZE_MULTIPLIER, x2 * GRAPH_SIZE_MULTIPLIER, r, Color.black);

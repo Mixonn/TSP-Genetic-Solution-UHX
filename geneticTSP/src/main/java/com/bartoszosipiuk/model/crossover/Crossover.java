@@ -1,4 +1,4 @@
-package com.bartoszosipiuk.crossover;
+package com.bartoszosipiuk.model.crossover;
 
 import java.util.Set;
 

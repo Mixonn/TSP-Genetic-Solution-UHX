@@ -17,23 +17,23 @@ public class Path {
     private double pathLength;
     private double fitness;
 
-    Path(List<Integer> path, Graph graph) {
+    public Path(List<Integer> path, Graph graph) {
         this.orderedPointsList = new ArrayList<>(path);
         this.graph = graph;
         updatePathLength();
     }
 
-    Path(Path pathToCopy) {
+    public Path(Path pathToCopy) {
         this.orderedPointsList = new ArrayList<>(pathToCopy.getOrderedPointsList());
         this.graph = pathToCopy.graph;
         updatePathLength();
     }
 
-    int getIdAt(int index) {
+    public int getIdAt(int index) {
         return orderedPointsList.get(index);
     }
 
-    List<Integer> getOrderedPointsList() {
+    public List<Integer> getOrderedPointsList() {
         return Collections.unmodifiableList(orderedPointsList);
     }
 
@@ -72,7 +72,7 @@ public class Path {
         return orderedPointsList.size();
     }
 
-    void mutateByCircuitInversion() {
+    public void mutateByCircuitInversion() {
         int firstIndex = ThreadLocalRandom.current().nextInt(orderedPointsList.size());
         int secondIndex = ThreadLocalRandom.current().nextInt(orderedPointsList.size());
 
@@ -101,12 +101,16 @@ public class Path {
         }
     }
 
-    double getFitness() {
+    public double getFitness() {
         return fitness;
     }
 
-    void setFitness(double fitness) {
+    public void setFitness(double fitness) {
         this.fitness = fitness;
+    }
+
+    public Graph getGraph(){
+        return graph; //todo copy it!
     }
 
     @Override

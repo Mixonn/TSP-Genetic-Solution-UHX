@@ -16,17 +16,17 @@ public class Point {
         this.y = y;
     }
 
-    double distance(Point p){
+    public double distance(Point p){
         return Math.sqrt(Math.pow((this.x-p.getX()),2)+Math.pow((this.y-p.getY()),2));
     }
 
-    int getX() {
+    public int getX() {
         return x;
     }
-    int getY() {
+    public int getY() {
         return y;
     }
-    int getId() {
+    public int getId() {
         return id;
     }
 

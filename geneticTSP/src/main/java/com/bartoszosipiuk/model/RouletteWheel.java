@@ -9,10 +9,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Bartosz Osipiuk
  */
 
-class RouletteWheel {
+public class RouletteWheel {
     private double[] rouletteItems;
 
-    RouletteWheel(List<Path> population){
+    public RouletteWheel(List<Path> population){
         double sumOfFitnesses = 0;
         rouletteItems = new double[population.size()+1];
 
@@ -41,7 +41,7 @@ class RouletteWheel {
         }
     }
 
-    int pickPathIndex(){
+    public int pickPathIndex(){
         return getParentIndex(ThreadLocalRandom.current().nextDouble());
     }
 
